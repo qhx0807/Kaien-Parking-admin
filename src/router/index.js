@@ -3,6 +3,9 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
+import CarList from '@/components/CarList'
+import Review from '@/components/Review'
+import Account from '@/components/Account'
 
 
 
@@ -22,8 +25,24 @@ export default new Router({
 		},
 		{
 			path: '/home',
-			name: 'Home',
-			component: Home
+			component: Home,
+			children:[
+				{
+					path:'',
+					name:'CarList',
+					component:CarList
+				},
+				{
+					path:'review',
+					name:'Review',
+					component:Review
+				},
+				{
+					path:'account',
+					name:'Account',
+					component:Account
+				},
+			]
 		}
 	]
 })

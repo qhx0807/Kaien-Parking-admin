@@ -2,19 +2,19 @@
     <div class="layout" :class="{'layout-hide-text': spanLeft < 4}">
         <Row type="flex">
             <Col :span="spanLeft" class="layout-menu-left" :style="menuStyleObj">
-                <Menu active-name="1" theme="dark" width="auto">
+                <Menu :active-name="activeName" theme="dark" width="auto" @on-select="selectMenu">
                     <div class="layout-logo-left"></div>
-                    <MenuItem name="1">
-                        <Icon type="ios-navigate" :size="iconSize"></Icon>
-                        <span class="layout-text">选项 1</span>
+                    <MenuItem name="CarList">
+                        <Icon type="ios-paper" :size="iconSize"></Icon>
+                        <span class="layout-text">车辆列表</span>
                     </MenuItem>
-                    <MenuItem name="2">
+                    <MenuItem name="Review">
                         <Icon type="ios-keypad" :size="iconSize"></Icon>
-                        <span class="layout-text">选项 2</span>
+                        <span class="layout-text">操作审核</span>
                     </MenuItem>
-                    <MenuItem name="3">
-                        <Icon type="ios-analytics" :size="iconSize"></Icon>
-                        <span class="layout-text">选项 3</span>
+                    <MenuItem name="Account">
+                        <Icon type="ios-person" :size="iconSize"></Icon>
+                        <span class="layout-text">账户管理</span>
                     </MenuItem>
                 </Menu>
             </Col>
@@ -29,8 +29,8 @@
                             <div slot="title">欢迎您，admin</div>
                             <div slot="content" class="poptip-content">
                                 <ul>
-                                    <li>个人信息</li>
-                                    <li>退出登录</li>
+                                    <li><Icon type="person" size="16"></Icon> 个人信息</li>
+                                    <li><Icon type="power" size="14"></Icon> 退出登录</li>
                                 </ul>
                             </div>
                         </Poptip>
@@ -38,20 +38,13 @@
                 </div>
                 <div class="layout-breadcrumb">
                     <Breadcrumb>
-                        <BreadcrumbItem href="#">首页</BreadcrumbItem>
-                        <BreadcrumbItem href="#">应用中心</BreadcrumbItem>
-                        <BreadcrumbItem>某应用</BreadcrumbItem>
+                        <BreadcrumbItem>首页</BreadcrumbItem>
+                        <BreadcrumbItem>{{breadcrumbname}}</BreadcrumbItem>
                     </Breadcrumb>
                 </div>
                 <div class="layout-content" :style="mainContentHeight">
                     <div class="layout-content-main">
-                        <ul>
-                            <li>
-                                内容区域<br><br><br><br><br>
-                            </li>
-                            
-
-                        </ul>
+                        <router-view/>
                     </div>
                 </div>
                 <div class="layout-copy">
@@ -77,11 +70,29 @@
                 },
                 avatarColor:'#00a2ae',
                 user:'admin',
+                breadcrumbname:'全部车辆',
+                activeName:'CarList',
             }
         },
         computed: {
             iconSize () {
-                return this.spanLeft === 2 ? 14 : 24;
+                return this.spanLeft === 2 ? 15 : 24;
+            }
+        },
+        watch:{
+            "$route":function(to, from){
+                this.activeName = to.name
+                switch(to.name){
+                    case "CarList":
+                        this.breadcrumbname = "全部车辆"
+                        break
+                    case "Review":
+                        this.breadcrumbname = "操作审核"
+                        break
+                    case "Account":
+                        this.breadcrumbname = "账户管理"
+                        break
+                }
             }
         },
         created(){
@@ -90,6 +101,19 @@
             
             this.menuStyleObj.height = winH + 'px';
             this.mainContentHeight.minHeight = winH - 169 +'px'
+            
+            this.activeName = this.$route.name
+            switch(this.$route.name){
+                case "CarList":
+                    this.breadcrumbname = "全部车辆"
+                    break
+                case "Review":
+                    this.breadcrumbname = "操作审核"
+                    break
+                case "Account":
+                    this.breadcrumbname = "账户管理"
+                    break
+            }
         },
         methods: {
             toggleClick () {
@@ -100,6 +124,9 @@
                     this.spanLeft = 4;
                     this.spanRight = 20;
                 }
+            },
+            selectMenu(e){
+                this.$router.push({name: e})
             }
         }
     }
@@ -124,7 +151,6 @@
         //min-height: 820px;
         margin: 15px;
         overflow: hidden;
-        background: #fff;
         border-radius: 4px;
     }
     .layout-content-main{
