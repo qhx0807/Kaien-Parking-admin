@@ -5,16 +5,20 @@
                 <Menu :active-name="activeName" theme="dark" width="auto" @on-select="selectMenu">
                     <div class="layout-logo-left"></div>
                     <MenuItem name="CarList">
-                        <Icon type="ios-paper" :size="iconSize"></Icon>
+                        <Icon type="android-car" :size="iconSize" title="车辆列表"></Icon>
                         <span class="layout-text">车辆列表</span>
                     </MenuItem>
                     <MenuItem name="Review">
-                        <Icon type="ios-keypad" :size="iconSize"></Icon>
+                        <Icon type="ios-keypad" :size="iconSize" title="操作审核"></Icon>
                         <span class="layout-text">操作审核</span>
                     </MenuItem>
                     <MenuItem name="Account">
-                        <Icon type="ios-person" :size="iconSize"></Icon>
+                        <Icon type="ios-person" :size="iconSize" title="账户管理"></Icon>
                         <span class="layout-text">账户管理</span>
+                    </MenuItem>
+                    <MenuItem name="Log">
+                        <Icon type="ios-calendar" :size="iconSize" title="日志查询"></Icon>
+                        <span class="layout-text">日志查询</span>
                     </MenuItem>
                 </Menu>
             </Col>
@@ -59,8 +63,8 @@
     export default {
         data () {
             return {
-                spanLeft: 4,
-                spanRight: 20,
+                spanLeft: 1,
+                spanRight: 23,
                 menuStyleObj:{
                     height:'',
                     overflow: 'auto',
@@ -92,6 +96,9 @@
                     case "Account":
                         this.breadcrumbname = "账户管理"
                         break
+                    case "Log":
+                        this.breadcrumbname = "日志查询"
+                        break
                 }
             }
         },
@@ -112,6 +119,9 @@
                     break
                 case "Account":
                     this.breadcrumbname = "账户管理"
+                    break
+                case "Log":
+                    this.breadcrumbname = "日志查询"
                     break
             }
         },
@@ -141,7 +151,7 @@
         //border: 1px solid #d7dde4;
         background: #f5f7f9;
         position: relative;
-        border-radius: 4px;
+        //border-radius: 4px;
         overflow: hidden;
     }
     .layout-breadcrumb{

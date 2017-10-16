@@ -6,6 +6,7 @@ import Home from '@/components/Home'
 import CarList from '@/components/CarList'
 import Review from '@/components/Review'
 import Account from '@/components/Account'
+import Log from '@/components/Log'
 
 
 
@@ -41,6 +42,11 @@ export default new Router({
 					path:'account',
 					name:'Account',
 					component:Account
+				},
+				{
+					path:'log',
+					name:'Log',
+					component:Log
 				},
 			]
 		}
