@@ -34,7 +34,7 @@
                             <div slot="content" class="poptip-content">
                                 <ul>
                                     <li><Icon type="person" size="16"></Icon> 个人信息</li>
-                                    <li><Icon type="power" size="14"></Icon> 退出登录</li>
+                                    <li @click="loginOut"><Icon type="power" size="14"></Icon> 退出登录</li>
                                 </ul>
                             </div>
                         </Poptip>
@@ -137,6 +137,16 @@
             },
             selectMenu(e){
                 this.$router.push({name: e})
+            },
+            loginOut(){
+                this.$Modal.confirm({
+                    title: '登出提示',
+                    content: '<p>确认退出当前账号吗？</p>',
+                    onOk: () => {
+                        this.$Message.info('已退出');
+                        this.$router.replace({name:'Login'})
+                    }
+                })
             }
         }
     }

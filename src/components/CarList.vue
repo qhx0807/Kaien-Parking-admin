@@ -183,6 +183,9 @@ export default {
 				],
 			addModal:false,
 			modal_loading:false,
+			addData:{
+				
+			},
 		}
 	},
 	created(){
