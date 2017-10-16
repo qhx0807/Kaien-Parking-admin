@@ -1,15 +1,308 @@
 <template>
 	<div>
-        Review
+        <Card :bordered="false">
+            <p slot="title"><Icon type="search" size="16"></Icon> 查询</p>
+           	<Form ref="formInline" :label-width="60">
+					<Row>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="车牌号" style="margin-bottom:0px">
+								<Input v-model="queryData.carcode" placeholder="请输入"></Input>
+							</FormItem>
+							
+						</Col>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="车辆类型" style="margin-bottom:0px">
+								<Select v-model="queryData.cartype">
+									<Option value="小客车"></Option>
+									<Option value="货车"></Option>
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="月票过期" style="margin-bottom:0px">
+								<Input v-model="queryData.monthlyticketexpiremonth" placeholder="请输入"></Input>
+							</FormItem>
+						</Col>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="停车类别" style="margin-bottom:0px">
+								<Select v-model="queryData.applyparkingtype">
+									<Option value="月票车" ></Option>
+									<Option value="免费车" ></Option>
+									<Option value="限免车" ></Option>
+								</Select>
+							</FormItem>
+						</Col>
+						
+						<Col span="3">
+							<Button type="primary" icon="ios-search">搜索</Button>
+						</Col>
+					</Row>
+			</Form>
+        </Card>
+		<Card :bordered="false" style="margin-top:16px;">
+			<div class="operation-wrap">
+				<Button type="primary" icon="checkmark" :disabled="isDisabled" @click="onClickAuth(1)">通过</Button>
+				<Button type="error" icon="close" style="margin-left:8px;" @click="onClickAuth(0)" :disabled="isDisabled">驳回</Button>
+			</div>
+			<div class="table-wrap">
+				<Table size="default"  @on-selection-change="onSelectItem" :loading="tableLoading" :columns="columns" :data="listData"></Table>
+				<div style="margin: 10px;overflow: hidden">
+					<div style="float: right;">
+						<Page :total="totalListLength" :current="1" size="small" show-sizer show-total @on-change="changePage"></Page>
+					</div>
+				</div>
+			</div>
+		</Card>
 	</div>
 </template>
 
 <script>
+import { postApi } from '../axios'
 export default {
 	name: 'Review',
 	data() {
 		return {
-			msg: 'Welcome to Your Vue.js App'
+			msg: 'Welcome to Your Vue.js App',
+			queryData:{
+				Ctype:'CarCodeMgrQuery',
+				carcode:'',
+				pagesize:'10',
+				pageno:'1',
+				currentparkingtype:'',
+				cartype:'',
+				remark:'',
+				monthlyticketexpiremonth:'',
+				applyparkingtype:'',
+				sorttype:'',
+				authstate:'已申请',
+			},
+			tableLoading:false,
+			columns: [
+					{
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+                    },
+                    {
+                        title: '车牌号',
+                        key: 'CarCode'
+                    },
+                    {
+                        title: '车辆类型',
+                        key: 'CarType'
+                    },
+                    {
+                        title: '停车类别',
+                        key: 'CurrentParkingType'
+					},
+					{
+                        title: '开始时间',
+                        key: 'StartTime'
+					},
+					{
+						title: '结束时间',
+                        key: 'EndTime'
+					},
+					{
+						title: '逾期时间',
+                        key: 'expiremonths'
+					},
+					{
+						title: '申请停车类别',
+                        key: 'applyParkingType'
+					},
+					{
+						title: '分组信息',
+                        key: 'SortType'
+					},
+					{
+						title: '审核状态',
+                        key: 'AuthState'
+					},
+					{
+						title: '备注',
+                        key: 'Remark'
+					},
+					{
+                        title: '操作',
+                        key: 'action',
+                        width: 150,
+                        align: 'center',
+                        render: (h, params) => {
+                            return h('div', [
+                                h('Button', {
+                                    props: {
+                                        type: 'primary',
+                                        size: 'small'
+                                    },
+                                    style: {
+                                        marginRight: '5px'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.passItem(params.CarCode)
+                                        }
+                                    }
+                                }, '通过'),
+                                h('Button', {
+                                    props: {
+                                        type: 'error',
+                                        size: 'small'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.refuseItem(params.CarCode)
+                                        }
+                                    }
+                                }, '驳回')
+                            ]);
+                        }
+                    }
+                ],
+			listData: [],
+			totalListLength:0,
+			selectedData:[],
+			isDisabled:true,
+		}
+	},
+	created(){
+		this.onLoadIn(this.queryData)
+	},
+	watch:{
+		"selectedData":function(n, o){
+			if(n.length>0){
+				this.isDisabled = false
+			}else{
+				this.isDisabled = true
+			}
+		}
+	},
+	methods:{
+		changePage(){
+
+		},
+		onLoadIn(obj){
+			postApi( obj, 
+				function(response){
+					console.log(response)
+					if(response.data.data){
+						let d = JSON.parse(response.data.data)
+						this.listData = d
+						this.totalListLength = d.length
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+
+				}.bind(this))
+		},
+		onSelectItem(e){
+			this.selectedData = e
+		},
+		onClickAuth(e){
+			if(this.selectedData.length===0){
+				return false
+			}
+			let arr = []
+			this.selectedData.forEach( item => {
+				arr.push(item.CarCode)
+			})
+			let state = '通过'
+			let content = '通过审核？'
+			if(e===0){
+				state = '拒绝'
+				content = '拒绝审核？'
+				
+			}else{
+				state = '通过'
+				content = '通过审核？'
+				
+			}
+			let authdata = {
+				Ctype:'CarCodeMgrAuth',
+				carcodelist:arr.toString(),
+				authstate:state
+			}
+			this.$Modal.confirm({
+				title:'确认提示',
+				content:content,
+				onOk: ()=> {
+					postApi( authdata, 
+                        function(response){
+							console.log(response)
+							if(response.data.ok){
+								this.$Message.success("操作成功！")
+								this.onLoadIn(this.queryData)
+							}else if(response.data.error){
+								this.$Message.warning(response.data.error)
+							}else{
+								this.$Message.warning(response.data)
+							}
+                        }.bind(this),function(error){
+							console.log(error)
+							
+                        }.bind(this))
+				}
+			})
+			
+
+
+		},
+		passItem(code){
+			let authdata = {
+				Ctype:'CarCodeMgrAuth',
+				carcodelist:code,
+				authstate:'通过',
+			}
+			this.$Modal.confirm({
+				title:'确认提示',
+				content:'通过审核？',
+				onOk: ()=> {
+					postApi( authdata, 
+                        function(response){
+							console.log(response)
+							if(response.data.ok){
+								this.$Message.success("操作成功！")
+								this.onLoadIn(this.queryData)
+							}else if(response.data.error){
+								this.$Message.warning(response.data.error)
+							}else{
+								this.$Message.warning(response.data)
+							}
+                        }.bind(this),function(error){
+							console.log(error)
+							
+                        }.bind(this))
+				}
+			})
+		},
+		refuseItem(code){
+			let authdata = {
+				Ctype:'CarCodeMgrAuth',
+				carcodelist:code,
+				authstate:'拒绝',
+			}
+			this.$Modal.confirm({
+				title:'确认提示',
+				content:'拒绝审核？',
+				onOk: ()=> {
+					postApi( authdata, 
+                        function(response){
+							console.log(response)
+							if(response.data.ok){
+								this.$Message.success("操作成功！")
+								this.onLoadIn(this.queryData)
+							}else if(response.data.error){
+								this.$Message.warning(response.data.error)
+							}else{
+								this.$Message.warning(response.data)
+							}
+                        }.bind(this),function(error){
+							console.log(error)
+							
+                        }.bind(this))
+				}
+			})
 		}
 	}
 }

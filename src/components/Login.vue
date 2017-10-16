@@ -7,8 +7,8 @@
         <Card class="login">
             <div class="login-title">WXPARKING ADMIN</div>
             <Form ref="fromlogin" :model="fromlogin" :rules="ruleLogin">
-                <FormItem prop="user">
-                    <Input type="text" v-model="fromlogin.user" placeholder="Username">
+                <FormItem prop="account">
+                    <Input type="text" v-model="fromlogin.account" placeholder="Username">
                         <Icon type="ios-person-outline" slot="prepend"></Icon>
                     </Input>
                 </FormItem>
@@ -18,11 +18,11 @@
                     </Input>
                 </FormItem>
                 <FormItem style="margin-bottom:6px;padding-left:2px">
-                     <Checkbox v-model="fromlogin.checkbox">记住我</Checkbox>
+                     <Checkbox v-model="remerberMe">记住我</Checkbox>
                 </FormItem>
 
                 <FormItem>
-                    <Button type="primary" @click="handleSubmit('fromlogin')" long>登录</Button>
+                    <Button type="primary" :loading="submitLoading" @click="handleSubmit('fromlogin')" long>登录</Button>
                 </FormItem>
             </Form>
         </Card>
@@ -30,23 +30,26 @@
 </template>
 
 <script>
+import { postApi } from '../axios'
 export default {
     name: 'Login',
     data() {
         return {
             msg: 'Welcome to Your Vue.js App',
             fromlogin:{
-                user: '',
+                Ctype:'Login',
+                account: '',
                 password: '',
-                checkbox:true,
             },
+            remerberMe:true,
+            submitLoading:false,
             ruleLogin:{
-                user: [
+                account: [
                     { required: true, message: '请填写用户名', trigger: 'blur' }
                 ],
                 password: [
                     { required: true, message: '请填写密码', trigger: 'blur' },
-                    { type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+                    //{ type: 'string', min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
                 ]
             }
         }
@@ -55,9 +58,26 @@ export default {
         handleSubmit(name) {
             this.$refs[name].validate((valid) => {
                 if (valid) {
-                    this.$Message.success('提交成功!');
+                    this.submitLoading = true
+                    postApi( this.fromlogin, 
+                        function(response){
+                            this.submitLoading = false
+                            if(response.data.error){
+                                this.$Modal.error({
+                                    title:'登录失败',
+                                    content:response.data.error,
+                                })
+                            }else if(response.data.ok){
+                                window.sessionStorage.setItem("name", this.fromlogin.account)
+                                this.$router.replace({name: 'CarList'})
+                            }
+                        }.bind(this),function(error){
+                            this.submitLoading = false
+                            console.log(error)
+                        }.bind(this))
+
                 } else {
-                    this.$Message.error('表单验证失败!');
+                    this.$Message.error('表单验证失败!')
                 }
             })
         }

@@ -1,5 +1,6 @@
 import axios from 'axios'
 
+const apiUrl = "https://bird.ioliu.cn/v1?url=http://39.108.15.145/parkingpay.ashx?"
 
 axios.interceptors.request.use(function(config){
     //在请求发出之前进行一些操作
@@ -21,26 +22,14 @@ axios.interceptors.request.use(function(config){
     return Promise.reject(error);
 })
 
-export const postApi = (params, succ_foo, error_foo) => {
+export const postApi = (data, succ_foo, error_foo) => {
+    let datastr = ''
+    for (let it in data) {
+        datastr += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+    }
     axios({
-        method:"post",
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        url:"http://192.168.2.231:807/SwsWeb.ashx",
-        data:{
-            methodName:"p_costManage.GetHJForScheId",
-               parameters:"2045",
-               u_login:"admin",
-               u_pass:"admin",
-               login_key:"",
-               no_login_key:"1",
-        },
-        transformRequest: [function (data) {
-            let ret = ''
-            for (let it in data) {
-              ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
-            }
-            return ret
-         }],
+        method:"get",
+        url: apiUrl + datastr,
     }).then(response => {
         succ_foo(response)
     })

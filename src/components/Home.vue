@@ -29,8 +29,8 @@
                     </Button>
                     <div class="avatar">
                         <Poptip trigger="hover"  placement="bottom-end" width="100">
-                            <Avatar size="large" :style="{background: avatarColor}">{{ user }}</Avatar>
-                            <div slot="title">欢迎您，admin</div>
+                            <Avatar size="large" :style="{background: avatarColor}">{{ username }}</Avatar>
+                            <div slot="title">欢迎您，{{username}}</div>
                             <div slot="content" class="poptip-content">
                                 <ul>
                                     <li><Icon type="person" size="16"></Icon> 个人信息</li>
@@ -76,6 +76,7 @@
                 user:'admin',
                 breadcrumbname:'全部车辆',
                 activeName:'CarList',
+                username:'',
             }
         },
         computed: {
@@ -109,6 +110,7 @@
             this.menuStyleObj.height = winH + 'px';
             this.mainContentHeight.minHeight = winH - 169 +'px'
             
+            this.username = sessionStorage.getItem("name")
             this.activeName = this.$route.name
             switch(this.$route.name){
                 case "CarList":
@@ -128,11 +130,11 @@
         methods: {
             toggleClick () {
                 if (this.spanLeft === 4) {
-                    this.spanLeft = 1;
-                    this.spanRight = 23;
+                    this.spanLeft = 1
+                    this.spanRight = 23
                 } else {
-                    this.spanLeft = 4;
-                    this.spanRight = 20;
+                    this.spanLeft = 4
+                    this.spanRight = 20
                 }
             },
             selectMenu(e){
@@ -143,7 +145,8 @@
                     title: '登出提示',
                     content: '<p>确认退出当前账号吗？</p>',
                     onOk: () => {
-                        this.$Message.info('已退出');
+                        this.$Message.info('已退出')
+                        window.sessionStorage.clear()
                         this.$router.replace({name:'Login'})
                     }
                 })

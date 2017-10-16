@@ -4,33 +4,40 @@
             <p slot="title"><Icon type="search" size="16"></Icon> 查询</p>
            	<Form ref="formInline" :label-width="60">
 					<Row>
-						<Col span="4">
-							<FormItem label="输入框" style="margin-bottom:0px">
-								<Input v-model="searchData.input" placeholder="请输入"></Input>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="车牌号" style="margin-bottom:0px">
+								<Input v-model="queryData.carcode" placeholder="请输入"></Input>
 							</FormItem>
 							
 						</Col>
-						<Col span="4">
-							<FormItem label="输入框" style="margin-bottom:0px">
-								<Input v-model="searchData.input" placeholder="请输入"></Input>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="车辆类型" style="margin-bottom:0px">
+								<Select v-model="queryData.cartype">
+									<Option value="客车"></Option>
+									<Option value="货车"></Option>
+								</Select>
 							</FormItem>
 						</Col>
-						<Col span="4">
-							<FormItem label="输入框" style="margin-bottom:0px">
-								<Input v-model="searchData.input" placeholder="请输入"></Input>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="月票过期" style="margin-bottom:0px">
+								<Input v-model="queryData.monthlyticketexpiremonth" placeholder="请输入"></Input>
 							</FormItem>
 						</Col>
-						<Col span="4">
-							<FormItem label="输入框" style="margin-bottom:0px">
-								<Input v-model="searchData.input" placeholder="请输入"></Input>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="停车类别" style="margin-bottom:0px">
+								<Select v-model="queryData.applyparkingtype">
+									<Option value="月票车" ></Option>
+									<Option value="免费车" ></Option>
+									<Option value="限免车" ></Option>
+								</Select>
 							</FormItem>
 						</Col>
-						<Col span="4">
-							<FormItem label="输入框" style="margin-bottom:0px">
-								<Input v-model="searchData.input" placeholder="请输入"></Input>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="审核状态" style="margin-bottom:0px">
+								<Input v-model="queryData.authstate" placeholder="请输入"></Input>
 							</FormItem>
 						</Col>
-						<Col span="3"  offset="1">
+						<Col span="3">
 							<Button type="primary" icon="ios-search">搜索</Button>
 						</Col>
 					</Row>
@@ -39,48 +46,50 @@
 		<Card :bordered="false" style="margin-top:16px;">
 			<div class="operation-wrap">
 				<Button type="primary" icon="plus" @click="onClickAdd">新增</Button>
-				<Button type="error" icon="trash-a" style="margin-left:8px;" disabled>删除</Button>
+				<Button type="error" icon="trash-a" style="margin-left:8px;" @click="removeItems" :disabled="isDisabled">删除</Button>
 			</div>
 			<div class="table-wrap">
-				<Table size="default"  :loading="tableLoading" :columns="columns1" :data="data1"></Table>
+				<Table size="default" @on-selection-change="onSelectItem"  :loading="tableLoading" :columns="columns" :data="listData"></Table>
 				<div style="margin: 10px;overflow: hidden">
 					<div style="float: right;">
-						<Page :total="100" :current="1" size="small" show-sizer show-total @on-change="changePage"></Page>
+						<Page :total="totalListLength" :current="1" size="small" show-sizer show-total @on-change="changePage"></Page>
 					</div>
 				</div>
 			</div>
 		</Card>
 
-		<Modal v-model="addModal" width="600">
+		<Modal v-model="addModal" width="500">
 			 <p slot="header" style="text-align:center">
 				<span>新增</span>
 			</p>
-			<div >
-				<Form ref="formAdd" :label-width="60" label-position="right">
+			<div style="padding:0 20px 0 0">
+				<Form ref="formAdd" :model="addData" :rules="ruleAdd" :label-width="70" label-position="right">
 					<Row>
-						<Col span="12">
-							<FormItem label="输入框" style="margin-bottom:24px">
-								<Input v-model="searchData.input" placeholder="请输入"></Input>
-							</FormItem>
-						</Col>
-						<Col span="12">
-							<FormItem label="输入框" style="margin-bottom:24px">
-								<Input v-model="searchData.input" placeholder="请输入"></Input>
-							</FormItem>
-						</Col>
-						<Col span="12">
-							<FormItem label="输入框" style="margin-bottom:24px">
-								<Input v-model="searchData.input" placeholder="请输入"></Input>
-							</FormItem>
-						</Col>
-						<Col span="12">
-							<FormItem label="输入框" style="margin-bottom:24px">
-								<Input v-model="searchData.input" placeholder="请输入"></Input>
+						<Col span="24" style="padding:0 ">
+							<FormItem prop="carcode" label="车牌号码" style="margin-bottom:24px">
+								<Input v-model="addData.carcode" placeholder="请输入"></Input>
 							</FormItem>
 						</Col>
 						<Col span="24">
-							<FormItem label="输入框" style="margin-bottom:24px">
-								<Input type="textarea" :autosize="{minRows: 2,maxRows: 5}" v-model="searchData.input" placeholder="请输入"></Input>
+							<FormItem prop="cartype" label="车辆类型" style="margin-bottom:24px">
+								<Select v-model="addData.cartype">
+									<Option value="客车"></Option>
+									<Option value="货车"></Option>
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem prop="applyparkingtype" label="停车类别" style="margin-bottom:24px">
+								<Select v-model="addData.applyparkingtype">
+									<Option value="月票车" ></Option>
+									<Option value="免费车" ></Option>
+									<Option value="限免车" ></Option>
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem label="备注说明" style="margin-bottom:24px">
+								<Input type="textarea" :autosize="{minRows: 3,maxRows: 5}" v-model="addData.remark" placeholder="请输入"></Input>
 							</FormItem>
 						</Col>
 					</Row>
@@ -88,7 +97,49 @@
 			</div>
 			<div slot="footer">
 				<Button type="ghost" size="default"  @click="addModal=false">取消</Button>
-				<Button type="primary" size="default" :loading="modal_loading" @click="onCliskSaveAdd">保存</Button>
+				<Button type="primary" size="default" :loading="modal_loading" @click="onCliskSaveAdd('formAdd')">保存</Button>
+			</div>
+		</Modal>
+		<Modal v-model="editModal" width="500">
+			 <p slot="header" style="text-align:center">
+				<span>修改</span>
+			</p>
+			<div style="padding:0 20px 0 0">
+				<Form ref="fromEdit" :model="editData" :rules="ruleAdd" :label-width="70" label-position="right">
+					<Row>
+						<Col span="24" style="padding:0 ">
+							<FormItem prop="carcode" label="车牌号码" style="margin-bottom:24px">
+								<Input v-model="editData.carcode" placeholder="请输入"></Input>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem prop="cartype" label="车辆类型" style="margin-bottom:24px">
+								<Select v-model="editData.cartype">
+									<Option value="客车"></Option>
+									<Option value="货车"></Option>
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem prop="applyparkingtype" label="停车类别" style="margin-bottom:24px">
+								<Select v-model="editData.applyparkingtype">
+									<Option value="月票车" ></Option>
+									<Option value="免费车" ></Option>
+									<Option value="限免车" ></Option>
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem label="备注说明" style="margin-bottom:24px">
+								<Input type="textarea" :autosize="{minRows: 3,maxRows: 5}" v-model="editData.remark" placeholder="请输入"></Input>
+							</FormItem>
+						</Col>
+					</Row>
+				</Form>
+			</div>
+			<div slot="footer">
+				<Button type="ghost" size="default"  @click="editModal=false">取消</Button>
+				<Button type="primary" size="default" :loading="modal_loading" @click="onCliskSaveEdit('fromEdit')">保存</Button>
 			</div>
 		</Modal>
 	</div>
@@ -104,28 +155,56 @@ export default {
 				input:'',
 			},
 			tableLoading:false,
-			columns1: [
+			columns: [
 					{
                         type: 'selection',
                         width: 60,
                         align: 'center'
                     },
                     {
-                        title: '姓名',
-                        key: 'name'
+                        title: '车牌号',
+                        key: 'CarCode'
                     },
                     {
-                        title: '年龄',
-                        key: 'age'
+                        title: '车辆类型',
+                        key: 'CarType'
                     },
                     {
-                        title: '地址',
-                        key: 'address'
-                    },
+                        title: '停车类别',
+                        key: 'CurrentParkingType'
+					},
+					{
+                        title: '开始时间',
+                        key: 'StartTime'
+					},
+					{
+						title: '结束时间',
+                        key: 'EndTime'
+					},
+					{
+						title: '逾期时间',
+                        key: 'expiremonths'
+					},
+					{
+						title: '申请停车类别',
+                        key: 'applyParkingType'
+					},
+					{
+						title: '分组信息',
+                        key: 'SortType'
+					},
+					{
+						title: '审核状态',
+                        key: 'AuthState'
+					},
+					{
+						title: '备注',
+                        key: 'Remark'
+					},
 					{
                         title: '操作',
                         key: 'action',
-                        width: 150,
+                        width: 140,
                         align: 'center',
                         render: (h, params) => {
                             return h('div', [
@@ -139,7 +218,7 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.show(params.index)
+                                            this.onEditShow(params.index)
                                         }
                                     }
                                 }, '修改'),
@@ -158,51 +237,198 @@ export default {
                         }
                     }
                 ],
-            data1: [
-					
-                    {
-                        name: '王小明',
-                        age: 18,
-                        address: '北京市朝阳区芍药居'
-                    },
-                    {
-                        name: '张小刚',
-                        age: 25,
-                        address: '北京市海淀区西二旗'
-                    },
-                    {
-                        name: '李小红',
-                        age: 30,
-                        address: '上海市浦东新区世纪大道'
-                    },
-                    {
-                        name: '周小伟',
-                        age: 26,
-                        address: '深圳市南山区深南大道'
-                    }
-				],
+            listData: [],
 			addModal:false,
+			editModal:false,
 			modal_loading:false,
 			addData:{
-				
+				Ctype:'CarCodeMgrAdd',
+				carcode:'',
+				cartype:'',
+				remark:'',
+				applyparkingtype:'',
+			},
+			queryData:{
+				Ctype:'CarCodeMgrQuery',
+				carcode:'',
+				pagesize:'10',
+				pageno:'1',
+				currentparkingtype:'',
+				cartype:'',
+				remark:'',
+				monthlyticketexpiremonth:'',
+				applyparkingtype:'',
+				sorttype:'',
+				authstate:'',
+			},
+			ruleAdd:{
+				carcode:[
+                    { required: true, message: '请输入车牌号', trigger: 'blur' }
+				],
+				cartype:[
+					{ required: true, message: '请选择车辆类型', trigger: 'blur' }
+				],
+				applyparkingtype:[
+					{ required: true, message: '请选择停车类别', trigger: 'blur' }
+				],
+			},
+			totalListLength:0,
+			isDisabled:true,
+			selectedData:[],
+			editData:{
+				Ctype:'CarCodeMgrModi',
+				carcode:'',
+				cartype:'',
+				remark:'',
+				applyparkingtype:'',
+				authstate:'',
 			},
 		}
 	},
 	created(){
-		//postApi()
+		this.onLoadIn(this.queryData)
 	},
 	watch:{
-
+		"selectedData":function(n, o){
+			if(n.length>0){
+				this.isDisabled = false
+			}else{
+				this.isDisabled = true
+			}
+		}
 	},
 	methods:{
 		changePage(){
 
 		},
+		onLoadIn(obj){
+			postApi( obj, 
+				function(response){
+					console.log(response)
+					if(response.data.data){
+						let d = JSON.parse(response.data.data)
+						this.listData = d
+						this.totalListLength = d.length
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+
+				}.bind(this))
+		},
 		onClickAdd(){
 			this.addModal = true
+			this.$refs['formAdd'].resetFields()
 		},
-		onCliskSaveAdd(){
-			this.modal_loading = true
+		onCliskSaveAdd(name){
+			 this.$refs[name].validate((valid) => {
+                if (valid) {
+                    this.modal_loading = true
+                    postApi( this.addData, 
+                        function(response){
+                            this.modal_loading = false
+							//console.log(response)
+							this.addModal = false
+							if(response.data.ok){
+								this.$Message.success("添加成功！")
+								this.onLoadIn(this.queryData)
+							}else if(response.data.error){
+								this.$Message.warning(response.data.error)
+							}
+                        }.bind(this),function(error){
+							this.modal_loading = false
+							this.addModal = false
+							console.log(error)
+							
+                        }.bind(this))
+
+                } else {
+                    this.$Message.error('表单验证失败!')
+                }
+            })
+		},
+		onSelectItem(e){
+			this.selectedData = e
+		},
+		onEditShow(index){
+			console.log(this.listData[index])
+			this.editData.carcode = this.listData[index].CarCode
+			this.editData.cartype = this.listData[index].CarType
+			this.editData.remark = this.listData[index].Remark
+			this.editData.applyparkingtype = this.listData[index].applyParkingType
+			this.editData.authstate = this.listData[index].AuthState
+			this.editModal = true
+		},
+		onCliskSaveEdit(name){
+			this.$refs[name].validate((valid) => {
+                if (valid) {
+                    this.modal_loading = true
+                    postApi( this.editData, 
+                        function(response){
+                            this.modal_loading = false
+							//console.log(response)
+							this.editModal = false
+							if(response.data.ok){
+								this.$Message.success("修改成功！")
+								this.onLoadIn(this.queryData)
+							}else if(response.data.error){
+								this.$Message.warning(response.data.error)
+							}
+                        }.bind(this),function(error){
+							this.modal_loading = false
+							this.editModal = false
+							console.log(error)
+							
+                        }.bind(this))
+
+                } else {
+                    this.$Message.error('表单验证失败!')
+                }
+            })
+		},
+		remove(index){
+			let removeData = {
+				Ctype:'CarCodeMgrModi',
+				carcode:'',
+				cartype:'',
+				remark:'',
+				applyparkingtype:'临停车',
+				authstate:'',
+			}
+			removeData.carcode = this.listData[index].CarCode
+			removeData.cartype = this.listData[index].CarType
+			removeData.remark = this.listData[index].Remark
+			removeData.authstate = this.listData[index].AuthState
+
+			this.$Modal.confirm({
+				title:'提示',
+				content:'确认移除车辆 <b>'+removeData.carcode+'</b>？',
+				onOk: ()=>{
+					postApi( removeData, 
+                        function(response){
+							console.log(response)
+							if(response.data.ok){
+								this.$Message.success("移除成功！")
+								this.onLoadIn(this.queryData)
+							}else if(response.data.error){
+								this.$Message.warning(response.data.error)
+							}
+                        }.bind(this),function(error){
+							console.log(error)
+							
+                        }.bind(this))
+				}
+			})
+		},
+		removeItems(){
+			if(this.selectedData.length===0){
+				return false
+			}
+			let arr = []
+			this.selectedData.forEach( item => {
+				arr.push(item.CarCode)
+			})
+			alert(arr)
 		}
 	}
 }
