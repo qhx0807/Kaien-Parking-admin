@@ -78,7 +78,7 @@ export default {
                         }.bind(this),function(error){
                             this.submitLoading = false
                             console.log(error)
-                             this.$Message.error('连接失败!')
+                            this.$Message.error('连接失败!')
                         }.bind(this))
 
                 } else {
