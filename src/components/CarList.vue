@@ -20,7 +20,17 @@
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="月票过期" style="margin-bottom:0px">
-								<Input v-model="queryData.monthlyticketexpiremonth" placeholder="请输入"></Input>
+								<Select v-model="queryData.monthlyticketexpiremonth">
+									<Option value="0">未逾期</Option>
+									<Option value="1">1个月</Option>
+									<Option value="2">2个月</Option>
+									<Option value="3">3个月</Option>
+									<Option value="4">4个月</Option>
+									<Option value="5">5个月</Option>
+									<Option value="6">6个月</Option>
+									<Option value="7">7个月</Option>
+									<Option value="8">8个月</Option>
+								</Select>
 							</FormItem>
 						</Col>
 						<Col span="4" style="padding-right:12px">
@@ -38,7 +48,7 @@
 							</FormItem>
 						</Col>
 						<Col span="3">
-							<Button type="primary" icon="ios-search">搜索</Button>
+							<Button type="primary" :loading="searchLoading" @click="onClickSearch" icon="ios-search">搜索</Button>
 						</Col>
 					</Row>
 			</Form>
@@ -52,7 +62,7 @@
 				<Table size="default" @on-selection-change="onSelectItem"  :loading="tableLoading" :columns="columns" :data="listData"></Table>
 				<div style="margin: 10px;overflow: hidden">
 					<div style="float: right;">
-						<Page :total="totalListLength" :current="1" size="small" show-sizer show-total @on-change="changePage"></Page>
+						<Page :total="totalListLength" :page-size-opts="pageSizeOpts" :page-size="pageSize" :current="currentPage" size="small" show-sizer show-total @on-change="changePage" @on-page-size-change="onPageSizeChange"></Page>
 					</div>
 				</div>
 			</div>
@@ -241,17 +251,19 @@ export default {
 			addModal:false,
 			editModal:false,
 			modal_loading:false,
+			pageSizeOpts:[5,10,15,20,30],
 			addData:{
 				Ctype:'CarCodeMgrAdd',
 				carcode:'',
 				cartype:'',
 				remark:'',
 				applyparkingtype:'',
+				oac:sessionStorage.getItem("name"),
 			},
 			queryData:{
 				Ctype:'CarCodeMgrQuery',
 				carcode:'',
-				pagesize:'10',
+				pagesize:'5',
 				pageno:'1',
 				currentparkingtype:'',
 				cartype:'',
@@ -260,6 +272,7 @@ export default {
 				applyparkingtype:'',
 				sorttype:'',
 				authstate:'',
+				oac:sessionStorage.getItem("name"),
 			},
 			ruleAdd:{
 				carcode:[
@@ -282,7 +295,11 @@ export default {
 				remark:'',
 				applyparkingtype:'',
 				authstate:'',
+				oac:sessionStorage.getItem("name"),
 			},
+			searchLoading:false,
+			pageSize:5,
+			currentPage:1,
 		}
 	},
 	created(){
@@ -298,13 +315,13 @@ export default {
 		}
 	},
 	methods:{
-		changePage(){
-
-		},
 		onLoadIn(obj){
+			this.tableLoading = true
 			postApi( obj, 
 				function(response){
 					console.log(response)
+					this.tableLoading = false
+					this.searchLoading = false
 					if(response.data.data){
 						let d = JSON.parse(response.data.data)
 						this.listData = d
@@ -313,7 +330,8 @@ export default {
 						this.$Message.warning(response.data.error)
 					}
 				}.bind(this),function(error){
-
+					this.tableLoading = false
+					this.searchLoading = false
 				}.bind(this))
 		},
 		onClickAdd(){
@@ -330,7 +348,7 @@ export default {
 							//console.log(response)
 							this.addModal = false
 							if(response.data.ok){
-								this.$Message.success("添加成功！")
+								this.$Message.info("添加成功！")
 								this.onLoadIn(this.queryData)
 							}else if(response.data.error){
 								this.$Message.warning(response.data.error)
@@ -369,7 +387,7 @@ export default {
 							//console.log(response)
 							this.editModal = false
 							if(response.data.ok){
-								this.$Message.success("修改成功！")
+								this.$Message.info("修改成功！")
 								this.onLoadIn(this.queryData)
 							}else if(response.data.error){
 								this.$Message.warning(response.data.error)
@@ -394,6 +412,7 @@ export default {
 				remark:'',
 				applyparkingtype:'临停车',
 				authstate:'',
+				oac:sessionStorage.getItem("name"),
 			}
 			removeData.carcode = this.listData[index].CarCode
 			removeData.cartype = this.listData[index].CarType
@@ -408,7 +427,7 @@ export default {
                         function(response){
 							console.log(response)
 							if(response.data.ok){
-								this.$Message.success("移除成功！")
+								this.$Message.info("移除成功！")
 								this.onLoadIn(this.queryData)
 							}else if(response.data.error){
 								this.$Message.warning(response.data.error)
@@ -429,6 +448,24 @@ export default {
 				arr.push(item.CarCode)
 			})
 			alert(arr)
+		},
+		onClickSearch(){
+			this.queryData.pageno = '1'
+			this.queryData.pagesize = '5'
+			this.pageSize = 5
+			this.currentPage = 1
+			this.searchLoading = true
+			this.onLoadIn(this.queryData)
+		},
+		changePage(e){
+			this.currentPage = e
+			this.queryData.pageno = e
+			this.onLoadIn(this.queryData)
+		},
+		onPageSizeChange(e){
+			this.pageSize = e
+			this.queryData.pagesize = e
+			this.onLoadIn(this.queryData)
 		}
 	}
 }

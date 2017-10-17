@@ -8,12 +8,11 @@
 							<FormItem label="车牌号" style="margin-bottom:0px">
 								<Input v-model="queryData.carcode" placeholder="请输入"></Input>
 							</FormItem>
-							
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="车辆类型" style="margin-bottom:0px">
 								<Select v-model="queryData.cartype">
-									<Option value="小客车"></Option>
+									<Option value="客车"></Option>
 									<Option value="货车"></Option>
 								</Select>
 							</FormItem>
@@ -32,9 +31,13 @@
 								</Select>
 							</FormItem>
 						</Col>
-						
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="备注" style="margin-bottom:0px">
+								<Input v-model="queryData.remark" placeholder="请输入"></Input>
+							</FormItem>
+						</Col>
 						<Col span="3">
-							<Button type="primary" icon="ios-search">搜索</Button>
+							<Button type="primary" :loading="searchLoading" @click="onClickSearch" icon="ios-search">搜索</Button>
 						</Col>
 					</Row>
 			</Form>
@@ -48,7 +51,7 @@
 				<Table size="default"  @on-selection-change="onSelectItem" :loading="tableLoading" :columns="columns" :data="listData"></Table>
 				<div style="margin: 10px;overflow: hidden">
 					<div style="float: right;">
-						<Page :total="totalListLength" :current="1" size="small" show-sizer show-total @on-change="changePage"></Page>
+						<Page :total="totalListLength" :page-size-opts="pageSizeOpts" :page-size="pageSize" :current="currentPage" size="small" show-sizer show-total @on-change="changePage" @on-page-size-change="onPageSizeChange"></Page>
 					</div>
 				</div>
 			</div>
@@ -66,7 +69,7 @@ export default {
 			queryData:{
 				Ctype:'CarCodeMgrQuery',
 				carcode:'',
-				pagesize:'10',
+				pagesize:'5',
 				pageno:'1',
 				currentparkingtype:'',
 				cartype:'',
@@ -75,6 +78,7 @@ export default {
 				applyparkingtype:'',
 				sorttype:'',
 				authstate:'已申请',
+				oac:sessionStorage.getItem("name"),
 			},
 			tableLoading:false,
 			columns: [
@@ -140,7 +144,7 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.passItem(params.CarCode)
+                                            this.passItem(params.row.CarCode)
                                         }
                                     }
                                 }, '通过'),
@@ -151,7 +155,7 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.refuseItem(params.CarCode)
+                                            this.refuseItem(params.row.CarCode)
                                         }
                                     }
                                 }, '驳回')
@@ -163,6 +167,10 @@ export default {
 			totalListLength:0,
 			selectedData:[],
 			isDisabled:true,
+			pageSizeOpts:[5,10,15,20,30],
+			searchLoading:false,
+			pageSize:5,
+			currentPage:1,
 		}
 	},
 	created(){
@@ -178,13 +186,13 @@ export default {
 		}
 	},
 	methods:{
-		changePage(){
-
-		},
 		onLoadIn(obj){
+			this.tableLoading = true
 			postApi( obj, 
 				function(response){
-					console.log(response)
+					//console.log(response)
+					this.tableLoading = false
+					this.searchLoading = false
 					if(response.data.data){
 						let d = JSON.parse(response.data.data)
 						this.listData = d
@@ -193,7 +201,8 @@ export default {
 						this.$Message.warning(response.data.error)
 					}
 				}.bind(this),function(error){
-
+					this.tableLoading = false
+					this.searchLoading = false
 				}.bind(this))
 		},
 		onSelectItem(e){
@@ -221,7 +230,8 @@ export default {
 			let authdata = {
 				Ctype:'CarCodeMgrAuth',
 				carcodelist:arr.toString(),
-				authstate:state
+				authstate:state,
+				oac:sessionStorage.getItem("name"),
 			}
 			this.$Modal.confirm({
 				title:'确认提示',
@@ -231,7 +241,7 @@ export default {
                         function(response){
 							console.log(response)
 							if(response.data.ok){
-								this.$Message.success("操作成功！")
+								this.$Message.info("操作成功！")
 								this.onLoadIn(this.queryData)
 							}else if(response.data.error){
 								this.$Message.warning(response.data.error)
@@ -253,6 +263,7 @@ export default {
 				Ctype:'CarCodeMgrAuth',
 				carcodelist:code,
 				authstate:'通过',
+				oac:sessionStorage.getItem("name"),
 			}
 			this.$Modal.confirm({
 				title:'确认提示',
@@ -262,7 +273,7 @@ export default {
                         function(response){
 							console.log(response)
 							if(response.data.ok){
-								this.$Message.success("操作成功！")
+								this.$Message.info("操作成功！")
 								this.onLoadIn(this.queryData)
 							}else if(response.data.error){
 								this.$Message.warning(response.data.error)
@@ -281,6 +292,7 @@ export default {
 				Ctype:'CarCodeMgrAuth',
 				carcodelist:code,
 				authstate:'拒绝',
+				oac:sessionStorage.getItem("name"),
 			}
 			this.$Modal.confirm({
 				title:'确认提示',
@@ -290,7 +302,7 @@ export default {
                         function(response){
 							console.log(response)
 							if(response.data.ok){
-								this.$Message.success("操作成功！")
+								this.$Message.info("操作成功！")
 								this.onLoadIn(this.queryData)
 							}else if(response.data.error){
 								this.$Message.warning(response.data.error)
@@ -303,11 +315,49 @@ export default {
                         }.bind(this))
 				}
 			})
+		},
+		onClickSearch(){
+			this.queryData.pageno = '1'
+			this.queryData.pagesize = '5'
+			this.pageSize = 5
+			this.currentPage = 1
+			this.searchLoading = true
+			this.onLoadIn(this.queryData)
+		},
+		changePage(e){
+			this.currentPage = e
+			this.queryData.pageno = e
+			this.onLoadIn(this.queryData)
+		},
+		onPageSizeChange(e){
+			this.pageSize = e
+			this.queryData.pagesize = e
+			this.onLoadIn(this.queryData)
 		}
 	}
 }
 </script>
 
 <style lang="less" scoped>
-
+.ivu-card-head{
+	padding: 8px 16px!important;
+}
+.ivu-card-body{
+	padding: 16px 8px!important;
+}
+.ivu-table-wrapper{
+	border:none!important;
+}
+.ivu-table:before{
+	height:0;
+}
+.ivu-table:after{
+	width:0;
+}
+.table-wrap{
+	padding: 16px 8px;
+}
+.operation-wrap{
+	padding: 5px 8px;
+}
 </style>

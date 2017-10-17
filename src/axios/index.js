@@ -1,6 +1,8 @@
 import axios from 'axios'
 
-const apiUrl = "https://bird.ioliu.cn/v1?url=http://39.108.15.145/parkingpay.ashx?"
+// const apiUrl = "https://bird.ioliu.cn/v1?url=http://39.108.15.145/parkingpay.ashx?"
+
+const apiUrl = "../parkingpay.ashx?"
 
 axios.interceptors.request.use(function(config){
     //在请求发出之前进行一些操作
