@@ -13,14 +13,16 @@
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="车辆类型" style="margin-bottom:0px">
 								<Select v-model="queryData.cartype">
-									<Option value="客车"></Option>
-									<Option value="货车"></Option>
+									<Option value="">全部</Option>
+									<Option value="客车">客车</Option>
+									<Option value="货车">货车</Option>
 								</Select>
 							</FormItem>
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="月票过期" style="margin-bottom:0px">
 								<Select v-model="queryData.monthlyticketexpiremonth">
+									<Option value="">全部</Option>
 									<Option value="0">未逾期</Option>
 									<Option value="1">1个月</Option>
 									<Option value="2">2个月</Option>
@@ -36,15 +38,20 @@
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="停车类别" style="margin-bottom:0px">
 								<Select v-model="queryData.applyparkingtype">
-									<Option value="月票车" ></Option>
-									<Option value="免费车" ></Option>
-									<Option value="限免车" ></Option>
+									<Option value="">全部</Option>
+									<Option value="月票车" >月票车</Option>
+									<Option value="免费车" >免费车</Option>
+									<Option value="限免车" >限免车</Option>
 								</Select>
 							</FormItem>
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="审核状态" style="margin-bottom:0px">
-								<Input v-model="queryData.authstate" placeholder="请输入"></Input>
+								<Select v-model="queryData.authstate">
+									<Option value="">全部</Option>
+									<Option value="无申请" >无申请</Option>
+									<Option value="已申请" >已申请</Option>
+								</Select>
 							</FormItem>
 						</Col>
 						<Col span="3">
@@ -99,7 +106,8 @@
 						</Col>
 						<Col span="24">
 							<FormItem label="备注说明" style="margin-bottom:24px">
-								<Input type="textarea" :autosize="{minRows: 3,maxRows: 5}" v-model="addData.remark" placeholder="请输入"></Input>
+								<Input type="textarea" :maxlength="100" :autosize="{minRows: 3,maxRows: 5}" v-model="addData.remark" placeholder="请输入"></Input>
+								<p style="text-align:right">字数(限100字符)：{{addData.remark.length}}/100</p>
 							</FormItem>
 						</Col>
 					</Row>
@@ -141,7 +149,8 @@
 						</Col>
 						<Col span="24">
 							<FormItem label="备注说明" style="margin-bottom:24px">
-								<Input type="textarea" :autosize="{minRows: 3,maxRows: 5}" v-model="editData.remark" placeholder="请输入"></Input>
+								<Input type="textarea" :maxlength="100"  :autosize="{minRows: 3,maxRows: 5}" v-model="editData.remark" placeholder="请输入"></Input>
+								<p style="text-align:right">字数(限100字符)：{{editData.remark.length}}/100</p>
 							</FormItem>
 						</Col>
 					</Row>
@@ -209,7 +218,29 @@ export default {
 					},
 					{
 						title: '备注',
-                        key: 'Remark'
+						key: 'Remark',
+						width:200,
+						render: (h, params) => {
+							const str = params.row.Remark.length > 20 ? params.row.Remark.substring(0,18)+'...' : params.row.Remark
+							const indent = params.row.Remark.length > 20 ? '20px' : '0'
+							return h('Tooltip', {
+								props: {
+                                    placement: 'bottom'
+                                }
+							}, [
+								h('div', str),
+								h('div',{
+									slot: 'content',
+									style: {
+										maxWidth: '250px',
+										wordBreak: 'break-all',
+										wordWrap: 'break-word',
+										whiteSpace:'normal',
+										textIndent: indent,
+                                    },
+								}, params.row.Remark)
+							])
+						}
 					},
 					{
                         title: '操作',
@@ -384,13 +415,15 @@ export default {
                     postApi( this.editData, 
                         function(response){
                             this.modal_loading = false
-							//console.log(response)
+							console.log(response)
 							this.editModal = false
 							if(response.data.ok){
 								this.$Message.info("修改成功！")
 								this.onLoadIn(this.queryData)
 							}else if(response.data.error){
 								this.$Message.warning(response.data.error)
+							}else{
+								this.$Message.warning(response.data)
 							}
                         }.bind(this),function(error){
 							this.modal_loading = false
@@ -466,7 +499,7 @@ export default {
 			this.pageSize = e
 			this.queryData.pagesize = e
 			this.onLoadIn(this.queryData)
-		}
+		},
 	}
 }
 </script>
@@ -477,6 +510,7 @@ export default {
 	}
 	.ivu-card-body{
 		padding: 16px 8px!important;
+		
 	}
 	.ivu-table-wrapper{
 		border:none!important;

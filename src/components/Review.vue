@@ -12,22 +12,35 @@
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="车辆类型" style="margin-bottom:0px">
 								<Select v-model="queryData.cartype">
-									<Option value="客车"></Option>
-									<Option value="货车"></Option>
+									<Option value="">全部</Option>
+									<Option value="客车">客车</Option>
+									<Option value="货车">货车</Option>
 								</Select>
 							</FormItem>
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="月票过期" style="margin-bottom:0px">
-								<Input v-model="queryData.monthlyticketexpiremonth" placeholder="请输入"></Input>
+								<Select v-model="queryData.monthlyticketexpiremonth">
+									<Option value="">全部</Option>
+									<Option value="0">未逾期</Option>
+									<Option value="1">1个月</Option>
+									<Option value="2">2个月</Option>
+									<Option value="3">3个月</Option>
+									<Option value="4">4个月</Option>
+									<Option value="5">5个月</Option>
+									<Option value="6">6个月</Option>
+									<Option value="7">7个月</Option>
+									<Option value="8">8个月</Option>
+								</Select>
 							</FormItem>
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="停车类别" style="margin-bottom:0px">
 								<Select v-model="queryData.applyparkingtype">
-									<Option value="月票车" ></Option>
-									<Option value="免费车" ></Option>
-									<Option value="限免车" ></Option>
+									<Option value="">全部</Option>
+									<Option value="月票车" >月票车</Option>
+									<Option value="免费车" >免费车</Option>
+									<Option value="限免车" >限免车</Option>
 								</Select>
 							</FormItem>
 						</Col>
@@ -125,7 +138,29 @@ export default {
 					},
 					{
 						title: '备注',
-                        key: 'Remark'
+						key: 'Remark',
+						width:200,
+						render: (h, params) => {
+							const str = params.row.Remark.length > 20 ? params.row.Remark.substring(0,18)+'...' : params.row.Remark
+							const indent = params.row.Remark.length > 20 ? '20px' : '0'
+							return h('Tooltip', {
+								props: {
+                                    placement: 'bottom'
+                                }
+							}, [
+								h('div', str),
+								h('div',{
+									slot: 'content',
+									style: {
+										maxWidth: '250px',
+										wordBreak: 'break-all',
+										wordWrap: 'break-word',
+										whiteSpace:'normal',
+										textIndent: indent,
+                                    },
+								}, params.row.Remark)
+							])
+						}
 					},
 					{
                         title: '操作',
