@@ -40,7 +40,8 @@
 									<Checkbox :label="3">免费车的审核权限</Checkbox>
 									<Checkbox :label="4">限免车的变更权限（增删改）</Checkbox>
 									<Checkbox :label="5">限免车的审核权限</Checkbox>
-									<Checkbox :label="6">日志查看权限</Checkbox>
+									<Checkbox :label="6">日志查看权限<span style="visibility: hidden;">日志（增删改）</span></Checkbox>
+									<Checkbox :label="7">车牌号导入权限</Checkbox>
 								</CheckboxGroup>
 							</FormItem>
 						</Col>
@@ -79,7 +80,8 @@
 									<Checkbox :label="3">免费车的审核权限</Checkbox>
 									<Checkbox :label="4">限免车的变更权限（增删改）</Checkbox>
 									<Checkbox :label="5">限免车的审核权限</Checkbox>
-									<Checkbox :label="6">日志查看权限</Checkbox>
+									<Checkbox :label="6">日志查看权限<span style="visibility: hidden;">日志（增删改）</span></Checkbox>
+									<Checkbox :label="7">车牌号导入权限</Checkbox>
 								</CheckboxGroup>
 							</FormItem>
 						</Col>
@@ -234,7 +236,7 @@ export default {
 			this.$refs[name].validate((valid) => {
 				if (valid) {
 					this.modal_loading = true
-					let auth = [0, 0, 0, 0, 0, 0, 0]
+					let auth = [0, 0, 0, 0, 0, 0, 0, 0]
 					this.authArr.forEach(function(item){
 						auth[item] = 1
 					})
@@ -267,7 +269,7 @@ export default {
 			this.$refs[name].validate((valid) => {
 				if(valid){
 					this.modal_loading = true
-					let auth = [0, 0, 0, 0, 0, 0, 0]
+					let auth = [0, 0, 0, 0, 0, 0, 0, 0]
 					this.authArr.forEach(function(item){
 						auth[item] = 1
 					})
@@ -338,6 +340,7 @@ export default {
 }
 .ivu-table:before{
 	height:0;
+	
 }
 .ivu-table:after{
 	width:0;

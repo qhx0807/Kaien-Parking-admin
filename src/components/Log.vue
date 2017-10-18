@@ -51,7 +51,7 @@ export default {
 		return {
 			queryData:{
 				Ctype:'LogQuery',
-				pagesize:'5',
+				pagesize:'10',
 				pageno:'1',
 				starttime:'',
 				endtime:'',
@@ -69,12 +69,12 @@ export default {
 				{
 					title: '账户',
 					key: 'AccountID',
-					width:150,
+					width:100,
 				},
 				{
 					title: '时间',
 					key: 'LogTime',
-					width:150,
+					width:170,
 				},
 				{
 					title: '车牌号',

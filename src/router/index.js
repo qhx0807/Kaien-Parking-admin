@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+
 import HelloWorld from '@/components/HelloWorld'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
@@ -7,8 +8,9 @@ import CarList from '@/components/CarList'
 import Review from '@/components/Review'
 import Account from '@/components/Account'
 import Log from '@/components/Log'
+import Setting from '@/components/Setting'
 
-
+//const HelloWorld = resolve => require(['@/components/HelloWorld'], resolve)
 
 Vue.use(Router)
 
@@ -47,6 +49,11 @@ export default new Router({
 					path:'log',
 					name:'Log',
 					component:Log
+				},
+				{
+					path:'setting',
+					name:'Setting',
+					component:Setting
 				},
 			]
 		}

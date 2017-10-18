@@ -63,6 +63,7 @@
 		<Card :bordered="false" style="margin-top:16px;">
 			<div class="operation-wrap">
 				<Button type="primary" icon="plus" @click="onClickAdd">新增</Button>
+				<Button type="primary" icon="ios-upload" style="margin-left:8px;"  @click="onClickImport">导入</Button>
 				<Button type="error" icon="trash-a" style="margin-left:8px;" @click="removeItems" :disabled="isDisabled">删除</Button>
 			</div>
 			<div class="table-wrap">
@@ -85,6 +86,15 @@
 						<Col span="24" style="padding:0 ">
 							<FormItem prop="carcode" label="车牌号码" style="margin-bottom:24px">
 								<Input v-model="addData.carcode" placeholder="请输入"></Input>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem prop="applyparkingtype" label="所属分类" style="margin-bottom:24px">
+								<Select v-model="addData.applyparkingtype">
+									<Option value="1" ></Option>
+									<Option value="2" ></Option>
+									<Option value="3" ></Option>
+								</Select>
 							</FormItem>
 						</Col>
 						<Col span="24">
@@ -131,6 +141,15 @@
 							</FormItem>
 						</Col>
 						<Col span="24">
+							<FormItem prop="applyparkingtype" label="所属分类" style="margin-bottom:24px">
+								<Select v-model="addData.applyparkingtype">
+									<Option value="1" ></Option>
+									<Option value="2" ></Option>
+									<Option value="3" ></Option>
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span="24">
 							<FormItem prop="cartype" label="车辆类型" style="margin-bottom:24px">
 								<Select v-model="editData.cartype">
 									<Option value="客车"></Option>
@@ -159,6 +178,17 @@
 			<div slot="footer">
 				<Button type="ghost" size="default"  @click="editModal=false">取消</Button>
 				<Button type="primary" size="default" :loading="modal_loading" @click="onCliskSaveEdit('fromEdit')">保存</Button>
+			</div>
+		</Modal>
+		<Modal v-model="importModal" width="600">
+			<p slot="header" style="text-align:center">
+				<span>导入</span>
+			</p>
+			<div style="height:450px;">
+				<iframe src="http://wap.baidu.com/" name="importIframe" height="100%" scrolling="auto"  width="100%" frameborder="0"></iframe>
+			</div>
+			<div slot="footer">
+				<Button type="ghost" size="default"  @click="importModal=false">取消</Button>
 			</div>
 		</Modal>
 	</div>
@@ -281,6 +311,7 @@ export default {
             listData: [],
 			addModal:false,
 			editModal:false,
+			importModal:false,
 			modal_loading:false,
 			pageSizeOpts:[5,10,15,20,30],
 			addData:{
@@ -500,6 +531,9 @@ export default {
 			this.queryData.pagesize = e
 			this.onLoadIn(this.queryData)
 		},
+		onClickImport(){
+			this.importModal = true
+		}
 	}
 }
 </script>

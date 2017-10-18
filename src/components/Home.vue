@@ -20,6 +20,10 @@
                         <Icon type="ios-calendar" :size="iconSize" title="日志查询"></Icon>
                         <span class="layout-text">日志查询</span>
                     </MenuItem>
+                    <MenuItem name="Setting">
+                        <Icon type="ios-gear" :size="iconSize" title="设置"></Icon>
+                        <span class="layout-text">系统设置</span>
+                    </MenuItem>
                 </Menu>
             </Col>
             <Col :span="spanRight"  :style="menuStyleObj">
@@ -100,6 +104,9 @@
                     case "Log":
                         this.breadcrumbname = "日志查询"
                         break
+                    case "Setting":
+                        this.breadcrumbname = "系统设置"
+                        break
                 }
             }
         },
@@ -124,6 +131,9 @@
                     break
                 case "Log":
                     this.breadcrumbname = "日志查询"
+                    break
+                case "Setting":
+                    this.breadcrumbname = "系统设置"
                     break
             }
         },
