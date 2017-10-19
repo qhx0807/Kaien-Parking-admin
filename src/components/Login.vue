@@ -66,6 +66,7 @@ export default {
                     postApi( this.fromlogin, 
                         function(response){
                             this.submitLoading = false
+                            console.log(response)
                             if(response.data.error){
                                 this.$Modal.error({
                                     title:'登录失败',
@@ -74,6 +75,8 @@ export default {
                             }else if(response.data.ok){
                                 window.sessionStorage.setItem("name", this.fromlogin.account)
                                 this.$router.replace({name: 'CarList'})
+                            }else{
+                                this.$Message.warning(response.data)
                             }
                         }.bind(this),function(error){
                             this.submitLoading = false
