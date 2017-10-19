@@ -12,7 +12,7 @@
             </Dropdown> -->
             <Tooltip :class="{active:active==index}" :key="index" :content="item.text" placement="right">
                 <Button style="width: 60px;margin-left: 0px;padding:10px 0;" type="text"  @click="selectMenu(index,item.name)">
-                    <Icon :size="22" :color="iconColor" :type="item.icon"></Icon>
+                    <Icon :size="24" :color="iconColor" :type="item.icon"></Icon>
                 </Button>
             </Tooltip>
         </template>
@@ -54,7 +54,7 @@ export default {
 				},
             ],
             iconColor:'#ffffff',
-            active:0,
+            active:-1,
 		}
 	},
 	methods:{

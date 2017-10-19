@@ -49,7 +49,7 @@ export default {
 	},
 	data() {
 		return {
-			hideMenuText:false,
+			hideMenuText:true,
 			username:'admin',
 			avatarColor:'#00a2ae',
 			breadcrumbname:'全部车辆',
@@ -160,7 +160,7 @@ export default {
 			padding: 10px 15px 0;
 		}
 		.page{
-            margin: 10px;
+            margin: 10px 0;
 		}
 		.copy{
 			text-align: center;

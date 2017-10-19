@@ -5,12 +5,12 @@
                 <Card :bordered="false">
                     <p slot="title">数据类别</p>
                     <ul class="data-type">
-                        <li :class="{active:activeItem==0}" @click="onClickItem">123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
-                        <li>123</li>
+                        <li :class="{active:activeItem==0}" @click="onClickItem">车辆类型</li>
+                        <li>车辆类型</li>
+                        <li>车辆类型</li>
+                        <li>车辆类型</li>
+                        <li>车辆类型</li>
+                        <li>车辆类型</li>
                     </ul>
                 </Card>
             </Col>
