@@ -5,7 +5,7 @@
                 <Card :bordered="false">
                     <p slot="title">数据类别</p>
                     <ul class="data-type">
-                        <li :class="{active:activeItem==0}" @click="onClickItem">车辆类型</li>
+                        <li :class="{active:activeItem==0}" @click="onClickTypeItem">车辆类型</li>
                         <li>车辆类型</li>
                         <li>车辆类型</li>
                         <li>车辆类型</li>
@@ -17,12 +17,13 @@
             <Col span="1" style="text-align:left"> 
                 <Icon style="margin-left:20px;margin-top:100px" type="arrow-right-a" size="30"></Icon>
             </Col>
-            <Col span="19">
+            <Col span="19" style="position: relative;">
+                <Spin fix v-if="pageLoading">加载中...</Spin>
                 <Card :bordered="false">
                     <p slot="title">内容</p>
                     <div class="data-wrap">
                         <ul>
-                            <li class="add-li" @mouseover="addcolor='#424242'" @mouseout="addcolor='#cccccc'"><Icon size="50" :color="addcolor" type="android-add"></Icon></li>
+                            
                             <li @mouseover="onMouseInItem" @mouseout="onMouseOutItem">
                                 月票车 
                                 <div class="mask" v-show="maskShow==1">
@@ -33,6 +34,7 @@
                             <li>月票车</li>
                             <li>月票车</li>
                             <li>月票车</li>
+                            <li class="add-li" @mouseover="addcolor='#424242'" @mouseout="addcolor='#cccccc'"><Icon size="50" :color="addcolor" type="android-add"></Icon></li>
                         </ul>
                     </div>
                     <div style="clear:both"></div>
@@ -52,17 +54,65 @@ export default {
             typeData:[],
             maskShow:0,
             addcolor:'#cccccc',
+            queryData:{
+                Ctype:'DataDIcQuery',
+                oac:sessionStorage.getItem("name"),
+            },
+            pageLoading:false,
+
         }
     },
     created () {
-
+        this.getListData(this.queryData)
+        Array.prototype.unique = function(){
+        var res = [];
+        var json = {};
+        for(var i = 0; i < this.length; i++){
+            if(!json[this[i]]){
+                res.push(this[i]);
+                json[this[i]] = 1;
+            }
+        }
+            return res;
+        }
+        var arr = [112,112,34,'你好',112,112,34,'你好','str','str1'];
+        //alert(arr.unique());
     },
     methods:{
-        getListData(){
-
+        getListData(obj){
+            this.pageLoading = true
+			postApi( obj, 
+				function(response){
+					console.log(response)
+					this.pageLoading = false
+					if(response.data.data){
+						
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+					this.pageLoading = false
+				}.bind(this))
         },
-        onClickItem(){
-
+        onClickTypeItem(type){
+            let d = {
+                Ctype:'DataDicDetailQuery',
+                paramsort: type,
+                oac:sessionStorage.getItem("name"),
+            }
+             this.pageLoading = true
+            postApi( d, 
+				function(response){
+					console.log(response)
+					this.pageLoading = false
+					if(response.data.data){
+						
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+					this.pageLoading = false
+				}.bind(this))
         },
         onMouseInItem(){
             this.maskShow = 1

@@ -58,7 +58,28 @@ export default {
 			},
 		}
 	},
-	
+	watch:{
+		"$route":function(to, from){
+			this.activeName = to.name
+			switch(to.name){
+				case "CarList":
+					this.breadcrumbname = "全部车辆"
+					break
+				case "Review":
+					this.breadcrumbname = "操作审核"
+					break
+				case "Account":
+					this.breadcrumbname = "账户管理"
+					break
+				case "Log":
+					this.breadcrumbname = "日志查询"
+					break
+				case "Setting":
+					this.breadcrumbname = "系统设置"
+					break
+			}
+		}
+	},
 	created(){
 		let winH = document.body.clientHeight;
 		let winW = document.body.clientWidth;

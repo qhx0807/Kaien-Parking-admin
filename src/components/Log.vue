@@ -6,7 +6,7 @@
 					<Row>
 						<Col span="5" style="padding-right:12px">
 							<FormItem label="日期" style="margin-bottom:0px">
-								<DatePicker type="datetimerange" :options="dateOpts" @on-change="onSelectDate" style="width: 100%" format="yyyy-MM-dd" placeholder="选择起始日期"></DatePicker>
+								<DatePicker type="daterange" :options="dateOpts" @on-change="onSelectDate" style="width: 100%" format="yyyy-MM-dd" placeholder="选择起始日期"></DatePicker>
 							</FormItem>
 						</Col>
 						<Col span="4" style="padding-right:12px">

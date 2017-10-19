@@ -8,7 +8,6 @@
 							<FormItem label="车牌号" style="margin-bottom:0px">
 								<Input v-model="queryData.carcode" placeholder="请输入"></Input>
 							</FormItem>
-							
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="车辆类型" style="margin-bottom:0px">
@@ -89,8 +88,8 @@
 							</FormItem>
 						</Col>
 						<Col span="24">
-							<FormItem prop="applyparkingtype" label="所属分类" style="margin-bottom:24px">
-								<Select v-model="addData.applyparkingtype">
+							<FormItem prop="sorttype" label="分组" style="margin-bottom:24px">
+								<Select v-model="addData.sorttype">
 									<Option value="1" ></Option>
 									<Option value="2" ></Option>
 									<Option value="3" ></Option>
@@ -106,12 +105,17 @@
 							</FormItem>
 						</Col>
 						<Col span="24">
-							<FormItem prop="applyparkingtype" label="停车类别" style="margin-bottom:24px">
+							<FormItem prop="applyparkingtype" label="停车费别" style="margin-bottom:24px">
 								<Select v-model="addData.applyparkingtype">
 									<Option value="月票车" ></Option>
 									<Option value="免费车" ></Option>
 									<Option value="限免车" ></Option>
 								</Select>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem label="起始日期" style="margin-bottom:24px">
+								<DatePicker @on-change="onSelectDateAdd" style="width:100%" type="daterange" format="yyyy-MM-dd" placeholder="选择日期和时间"></DatePicker>
 							</FormItem>
 						</Col>
 						<Col span="24">
@@ -141,8 +145,8 @@
 							</FormItem>
 						</Col>
 						<Col span="24">
-							<FormItem prop="applyparkingtype" label="所属分类" style="margin-bottom:24px">
-								<Select v-model="addData.applyparkingtype">
+							<FormItem prop="sorttype" label="分组" style="margin-bottom:24px">
+								<Select v-model="addData.sorttype">
 									<Option value="1" ></Option>
 									<Option value="2" ></Option>
 									<Option value="3" ></Option>
@@ -158,12 +162,17 @@
 							</FormItem>
 						</Col>
 						<Col span="24">
-							<FormItem prop="applyparkingtype" label="停车类别" style="margin-bottom:24px">
+							<FormItem prop="applyparkingtype" label="停车费别" style="margin-bottom:24px">
 								<Select v-model="editData.applyparkingtype">
 									<Option value="月票车" ></Option>
 									<Option value="免费车" ></Option>
 									<Option value="限免车" ></Option>
 								</Select>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem label="起始日期" style="margin-bottom:24px">
+								<DatePicker @on-change="onSelectDateAdd" style="width:100%" type="daterange" format="yyyy-MM-dd" placeholder="选择日期和时间"></DatePicker>
 							</FormItem>
 						</Col>
 						<Col span="24">
@@ -212,7 +221,8 @@ export default {
                     },
                     {
                         title: '车牌号',
-                        key: 'CarCode'
+						key: 'CarCode',
+						width:100,
                     },
                     {
                         title: '车辆类型',
@@ -241,6 +251,10 @@ export default {
 					{
 						title: '分组信息',
                         key: 'SortType'
+					},
+					{
+						title:'修改到期日期',
+						key:'applyenddate'
 					},
 					{
 						title: '审核状态',
@@ -320,6 +334,9 @@ export default {
 				cartype:'',
 				remark:'',
 				applyparkingtype:'',
+				startdate:'',
+				enddate:'',
+				sorttype:'',
 				oac:sessionStorage.getItem("name"),
 			},
 			queryData:{
@@ -346,6 +363,9 @@ export default {
 				applyparkingtype:[
 					{ required: true, message: '请选择停车类别', trigger: 'blur' }
 				],
+				sorttype:[
+					{ required: true, message: '请选择分组', trigger: 'blur' }
+				]
 			},
 			totalListLength:0,
 			isDisabled:true,
@@ -357,6 +377,9 @@ export default {
 				remark:'',
 				applyparkingtype:'',
 				authstate:'',
+				startdate:'',
+				enddate:'',
+				sorttype:'',
 				oac:sessionStorage.getItem("name"),
 			},
 			searchLoading:false,
@@ -533,7 +556,15 @@ export default {
 		},
 		onClickImport(){
 			this.importModal = true
-		}
+		},
+		onSelectDateAdd(e){
+			this.addData.startdate = e[0]
+			this.addData.enddate = e[1]
+		},
+		onSelectDateEdit(e){
+			this.editData.startdate = e[0]
+			this.editData.enddate = e[1]
+		},
 	}
 }
 </script>
