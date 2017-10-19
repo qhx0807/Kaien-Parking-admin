@@ -2,14 +2,6 @@
     <div>
         <div class="layout-logo-left"></div>
         <template v-for="(item, index) in menuList">
-            <!-- <Dropdown  placement="right-start" :key="index">
-                <Button style="width: 70px;margin-left: -5px;padding:10px 0;" type="text">
-                    <Icon :size="22" :color="iconColor" :type="item.icon"></Icon>
-                </Button>
-                <DropdownMenu style="width: 150px;" slot="list">
-                    <DropdownItem :name="item.name" ><Icon :type="item.icon"></Icon><span style="padding-left:10px;">{{ item.text }}</span></DropdownItem>
-                </DropdownMenu>
-            </Dropdown> -->
             <Tooltip :class="{active:active==index}" :key="index" :content="item.text" placement="right">
                 <Button style="width: 60px;margin-left: 0px;padding:10px 0;" type="text"  @click="selectMenu(index,item.name)">
                     <Icon :size="24" :color="iconColor" :type="item.icon"></Icon>
