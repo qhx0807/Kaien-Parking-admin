@@ -9,6 +9,7 @@ import Review from '@/components/Review'
 import Account from '@/components/Account'
 import Log from '@/components/Log'
 import Setting from '@/components/Setting'
+import Main from '@/components/Main'
 
 //const HelloWorld = resolve => require(['@/components/HelloWorld'], resolve)
 
@@ -27,8 +28,8 @@ export default new Router({
 			component: Login
 		},
 		{
-			path: '/home',
-			component: Home,
+			path: '/main',
+			component: Main,
 			children:[
 				{
 					path:'',
