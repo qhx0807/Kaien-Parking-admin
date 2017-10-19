@@ -5,12 +5,7 @@
                 <Card :bordered="false">
                     <p slot="title">数据类别</p>
                     <ul class="data-type">
-                        <li :class="{active:activeItem==0}" @click="onClickTypeItem">车辆类型</li>
-                        <li>车辆类型</li>
-                        <li>车辆类型</li>
-                        <li>车辆类型</li>
-                        <li>车辆类型</li>
-                        <li>车辆类型</li>
+                        <li v-for="(item, index) in typeData" :class="{active:activeItem==index}" :key="item.ParamCode" @click="onClickTypeItem(index,item.ParamCode)">{{item.ParamValue}}</li>
                     </ul>
                 </Card>
             </Col>
@@ -23,18 +18,14 @@
                     <p slot="title">内容</p>
                     <div class="data-wrap">
                         <ul>
-                            
-                            <li @mouseover="onMouseInItem" @mouseout="onMouseOutItem">
-                                月票车 
-                                <div class="mask" v-show="maskShow==1">
-                                    <Icon type="edit" class="edit-icon" size="21" color="#ffffff"></Icon>
-                                    <Icon type="ios-trash" class="del-icon" size="22" color="#ffffff"></Icon>
+                            <li v-for="(item, index) in listData" :key="item.ID" @mouseover="onMouseInItem(index)" @mouseout="onMouseOutItem(index)">
+                                {{item.ParamValue}}
+                                <div class="mask" v-show="maskShow==index">
+                                    <Icon type="edit" v-if="item.ismodiable==1" class="edit-icon" size="21" color="#ffffff"></Icon>
+                                    <Icon type="ios-trash"  v-if="item.isDelable==1" class="del-icon" size="22" color="#ffffff"></Icon>
                                 </div>
                             </li>
-                            <li>月票车</li>
-                            <li>月票车</li>
-                            <li>月票车</li>
-                            <li class="add-li" @mouseover="addcolor='#424242'" @mouseout="addcolor='#cccccc'"><Icon size="50" :color="addcolor" type="android-add"></Icon></li>
+                            <li v-if="activeItem != -1" class="add-li" @mouseover="addcolor='#424242'" @mouseout="addcolor='#cccccc'"><Icon size="50" :color="addcolor" type="android-add"></Icon></li>
                         </ul>
                     </div>
                     <div style="clear:both"></div>
@@ -50,16 +41,16 @@ export default {
     name: 'Setting',
     data(){
         return {
-            activeItem: 0,
+            activeItem: -1,
             typeData:[],
-            maskShow:0,
+            maskShow:-1,
             addcolor:'#cccccc',
             queryData:{
-                Ctype:'DataDIcQuery',
+                Ctype:'DataDicQuery',
                 oac:sessionStorage.getItem("name"),
             },
             pageLoading:false,
-
+            listData:[],
         }
     },
     created () {
@@ -83,18 +74,21 @@ export default {
             this.pageLoading = true
 			postApi( obj, 
 				function(response){
-					console.log(response)
+					//console.log(response)
 					this.pageLoading = false
-					if(response.data.data){
-						
-					}else if(response.data.error){
+					if(response.data){
+                        this.typeData = response.data
+					}else if(response.error){
 						this.$Message.warning(response.data.error)
-					}
+					}else{
+                        this.$Message.warning(response)
+                    }
 				}.bind(this),function(error){
 					this.pageLoading = false
 				}.bind(this))
         },
-        onClickTypeItem(type){
+        onClickTypeItem(index, type){
+            this.activeItem = index
             let d = {
                 Ctype:'DataDicDetailQuery',
                 paramsort: type,
@@ -105,19 +99,21 @@ export default {
 				function(response){
 					console.log(response)
 					this.pageLoading = false
-					if(response.data.data){
-						
+					if(response.data){
+						this.listData = response.data
 					}else if(response.data.error){
-						this.$Message.warning(response.data.error)
-					}
+						this.$Message.warning(response.error)
+					}else{
+                        this.$Message.warning(response)
+                    }
 				}.bind(this),function(error){
 					this.pageLoading = false
 				}.bind(this))
         },
-        onMouseInItem(){
-            this.maskShow = 1
+        onMouseInItem(index){
+            this.maskShow = index
         },
-        onMouseOutItem(){
+        onMouseOutItem(index){
             this.maskShow = -1
         }
     }
@@ -181,16 +177,21 @@ export default {
                 bottom:0;
                 border-radius: 6px;
                 background-color: rgba(0, 0, 0, .6);
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 .edit-icon{
-                    position: absolute;
-                    bottom: 40px;
-                    left: 30px;
+                    // position: absolute;
+                    // bottom: 40px;
+                    // left: 30px;
+                    margin: 10px;
                     cursor: pointer;
                 }
                 .del-icon{
-                    position: absolute;
-                    bottom: 40px;
-                    right: 30px;
+                    // position: absolute;
+                    // bottom: 40px;
+                    // right: 30px;
+                    margin: 10px;
                     cursor: pointer;
                 }
             }

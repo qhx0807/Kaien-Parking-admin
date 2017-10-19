@@ -13,8 +13,7 @@
 							<FormItem label="车辆类型" style="margin-bottom:0px">
 								<Select v-model="queryData.cartype">
 									<Option value="">全部</Option>
-									<Option value="客车">客车</Option>
-									<Option value="货车">货车</Option>
+									<Option v-for="item in carOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
@@ -38,9 +37,7 @@
 							<FormItem label="停车类别" style="margin-bottom:0px">
 								<Select v-model="queryData.applyparkingtype">
 									<Option value="">全部</Option>
-									<Option value="月票车" >月票车</Option>
-									<Option value="免费车" >免费车</Option>
-									<Option value="限免车" >限免车</Option>
+									<Option v-for="item in parkOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
@@ -48,8 +45,7 @@
 							<FormItem label="审核状态" style="margin-bottom:0px">
 								<Select v-model="queryData.authstate">
 									<Option value="">全部</Option>
-									<Option value="无申请" >无申请</Option>
-									<Option value="已申请" >已申请</Option>
+									<Option v-for="item in authOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
@@ -90,26 +86,21 @@
 						<Col span="24">
 							<FormItem prop="sorttype" label="分组" style="margin-bottom:24px">
 								<Select v-model="addData.sorttype">
-									<Option value="1" ></Option>
-									<Option value="2" ></Option>
-									<Option value="3" ></Option>
+									<Option v-for="item in sortOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
 						<Col span="24">
 							<FormItem prop="cartype" label="车辆类型" style="margin-bottom:24px">
 								<Select v-model="addData.cartype">
-									<Option value="客车"></Option>
-									<Option value="货车"></Option>
+									<Option v-for="item in carOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
 						<Col span="24">
 							<FormItem prop="applyparkingtype" label="停车费别" style="margin-bottom:24px">
 								<Select v-model="addData.applyparkingtype">
-									<Option value="月票车" ></Option>
-									<Option value="免费车" ></Option>
-									<Option value="限免车" ></Option>
+									<Option v-for="item in parkOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
@@ -146,27 +137,22 @@
 						</Col>
 						<Col span="24">
 							<FormItem prop="sorttype" label="分组" style="margin-bottom:24px">
-								<Select v-model="addData.sorttype">
-									<Option value="1" ></Option>
-									<Option value="2" ></Option>
-									<Option value="3" ></Option>
+								<Select v-model="editData.sorttype">
+									<Option v-for="item in sortOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
 						<Col span="24">
 							<FormItem prop="cartype" label="车辆类型" style="margin-bottom:24px">
 								<Select v-model="editData.cartype">
-									<Option value="客车"></Option>
-									<Option value="货车"></Option>
+									<Option v-for="item in carOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
 						<Col span="24">
 							<FormItem prop="applyparkingtype" label="停车费别" style="margin-bottom:24px">
 								<Select v-model="editData.applyparkingtype">
-									<Option value="月票车" ></Option>
-									<Option value="免费车" ></Option>
-									<Option value="限免车" ></Option>
+									<Option v-for="item in parkOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
@@ -194,7 +180,7 @@
 				<span>导入</span>
 			</p>
 			<div style="height:450px;">
-				<iframe src="http://wap.baidu.com/" name="importIframe" height="100%" scrolling="auto"  width="100%" frameborder="0"></iframe>
+				<iframe src="http:www.kaien.cc/DataImport.aspx" name="importIframe" height="100%" scrolling="auto"  width="100%" frameborder="0"></iframe>
 			</div>
 			<div slot="footer">
 				<Button type="ghost" size="default"  @click="importModal=false">取消</Button>
@@ -285,6 +271,10 @@ export default {
 								}, params.row.Remark)
 							])
 						}
+					},
+					{
+						title:'驳回理由',
+						key:'rejectreason',
 					},
 					{
                         title: '操作',
@@ -385,10 +375,15 @@ export default {
 			searchLoading:false,
 			pageSize:5,
 			currentPage:1,
+			authOpts:[],
+			carOpts:[],
+			parkOpts:[],
+			sortOpts:[],
 		}
 	},
 	created(){
 		this.onLoadIn(this.queryData)
+		this.loadBaseData()
 	},
 	watch:{
 		"selectedData":function(n, o){
@@ -410,13 +405,77 @@ export default {
 					if(response.data.data){
 						let d = JSON.parse(response.data.data)
 						this.listData = d
-						this.totalListLength = d.length
+						this.totalListLength = response.data.totalrecords
 					}else if(response.data.error){
 						this.$Message.warning(response.data.error)
 					}
 				}.bind(this),function(error){
 					this.tableLoading = false
 					this.searchLoading = false
+				}.bind(this))
+		},
+		loadBaseData(){
+			let a = {
+                Ctype:'DataDicDetailQuery',
+                paramsort: 'AuthState',
+                oac:sessionStorage.getItem("name"),
+			}
+			let c = {
+                Ctype:'DataDicDetailQuery',
+                paramsort: 'CarType',
+                oac:sessionStorage.getItem("name"),
+			}
+			let p = {
+                Ctype:'DataDicDetailQuery',
+                paramsort: 'ParkingType',
+                oac:sessionStorage.getItem("name"),
+			}
+			let s = {
+                Ctype:'DataDicDetailQuery',
+                paramsort: 'SortType',
+                oac:sessionStorage.getItem("name"),
+            }
+			postApi( a, 
+				function(response){
+					//console.log(response)
+					if(response.data){
+						this.authOpts = response.data
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+				}.bind(this))
+			postApi( c, 
+				function(response){
+					//console.log(response)
+					if(response.data){
+						this.carOpts = response.data
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+				}.bind(this))
+			postApi( p, 
+				function(response){
+					//console.log(response)
+					if(response.data){
+						response.data.splice(0,1)
+						this.parkOpts = response.data
+						//console.log(this.parkOpts)
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+				}.bind(this))
+			postApi( s, 
+				function(response){
+					//console.log(response)
+					if(response.data){
+						this.sortOpts = response.data
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
 				}.bind(this))
 		},
 		onClickAdd(){
@@ -430,7 +489,7 @@ export default {
                     postApi( this.addData, 
                         function(response){
                             this.modal_loading = false
-							//console.log(response)
+							console.log(response)
 							this.addModal = false
 							if(response.data.ok){
 								this.$Message.info("添加成功！")

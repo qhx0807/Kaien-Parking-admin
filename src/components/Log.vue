@@ -113,8 +113,7 @@ export default {
 					if(response.data.data){
 						let d = JSON.parse(response.data.data)
 						this.listData = d
-						console.log(d)
-						//this.totalListLength = d.length
+						this.totalListLength = response.data.totalrecords
 					}else if(response.data.error){
 						this.$Message.warning(response.data.error)
 					}

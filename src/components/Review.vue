@@ -13,8 +13,7 @@
 							<FormItem label="车辆类型" style="margin-bottom:0px">
 								<Select v-model="queryData.cartype">
 									<Option value="">全部</Option>
-									<Option value="客车">客车</Option>
-									<Option value="货车">货车</Option>
+									<Option v-for="item in carOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
@@ -38,9 +37,7 @@
 							<FormItem label="停车类别" style="margin-bottom:0px">
 								<Select v-model="queryData.applyparkingtype">
 									<Option value="">全部</Option>
-									<Option value="月票车" >月票车</Option>
-									<Option value="免费车" >免费车</Option>
-									<Option value="限免车" >限免车</Option>
+									<Option v-for="item in parkOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
 							</FormItem>
 						</Col>
@@ -58,7 +55,7 @@
 		<Card :bordered="false" style="margin-top:16px;">
 			<div class="operation-wrap">
 				<Button type="primary" icon="checkmark" :disabled="isDisabled" @click="onClickAuth(1)">通过</Button>
-				<Button type="error" icon="close" style="margin-left:8px;" @click="onClickAuth(0)" :disabled="isDisabled">驳回</Button>
+				<Button type="error" icon="close" style="margin-left:8px;" @click="onClickAuthMore" :disabled="isDisabled">驳回</Button>
 			</div>
 			<div class="table-wrap">
 				<Table size="default"  @on-selection-change="onSelectItem" :loading="tableLoading" :columns="columns" :data="listData"></Table>
@@ -69,6 +66,32 @@
 				</div>
 			</div>
 		</Card>
+		<Modal v-model="rejectModal" width="500">
+			<p slot="header" style="text-align:center">
+				<span>驳回：{{setcarcode}}</span>
+			</p>
+			<div style="padding:0 20px 0 0">
+				<Input type="textarea" :maxlength="100" :autosize="{minRows: 4,maxRows: 5}" v-model="rejectReason" placeholder="请输入驳回原因..."></Input>
+				<p style="text-align:left;margin-top:7px">字数(限100字符)：{{rejectReason.length}}/100</p>
+			</div>
+			<div slot="footer">
+				<Button type="ghost" size="default"  @click="rejectModal=false">取消</Button>
+				<Button type="primary" size="default" :loading="modal_loading" @click="refuseItem">保存</Button>
+			</div>
+		</Modal>
+		<Modal v-model="rejectModalMore" width="500">
+			<p slot="header" style="text-align:center">
+				<span>驳回：{{setcarcodelist}}</span>
+			</p>
+			<div style="padding:0 20px 0 0">
+				<Input type="textarea" :maxlength="100" :autosize="{minRows: 4,maxRows: 5}" v-model="rejectReason" placeholder="请输入驳回原因..."></Input>
+				<p style="text-align:left;margin-top:7px">字数(限100字符)：{{rejectReason.length}}/100</p>
+			</div>
+			<div slot="footer">
+				<Button type="ghost" size="default"  @click="rejectModalMore=false">取消</Button>
+				<Button type="primary" size="default" :loading="modal_loading" @click="refuseMore">保存</Button>
+			</div>
+		</Modal>
 	</div>
 </template>
 
@@ -90,10 +113,12 @@ export default {
 				monthlyticketexpiremonth:'',
 				applyparkingtype:'',
 				sorttype:'',
-				authstate:'已申请',
+				authstate:'待审核',
 				oac:sessionStorage.getItem("name"),
 			},
 			tableLoading:false,
+			rejectModal:false,
+			rejectModalMore:false,
 			columns: [
 					{
                         type: 'selection',
@@ -190,7 +215,8 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.refuseItem(params.row.CarCode)
+											//this.refuseItem(params.row.CarCode)
+											this.onClickRejectBtn(params.row.CarCode)
                                         }
                                     }
                                 }, '驳回')
@@ -206,10 +232,19 @@ export default {
 			searchLoading:false,
 			pageSize:5,
 			currentPage:1,
+			modal_loading:false,
+			rejectReason:'',
+			authOpts:[],
+			carOpts:[],
+			parkOpts:[],
+			sortOpts:[],
+			setcarcode:'',
+			setcarcodelist:'',
 		}
 	},
 	created(){
 		this.onLoadIn(this.queryData)
+		this.loadBaseData()
 	},
 	watch:{
 		"selectedData":function(n, o){
@@ -221,17 +256,80 @@ export default {
 		}
 	},
 	methods:{
+		loadBaseData(){
+			let a = {
+                Ctype:'DataDicDetailQuery',
+                paramsort: 'AuthState',
+                oac:sessionStorage.getItem("name"),
+			}
+			let c = {
+                Ctype:'DataDicDetailQuery',
+                paramsort: 'CarType',
+                oac:sessionStorage.getItem("name"),
+			}
+			let p = {
+                Ctype:'DataDicDetailQuery',
+                paramsort: 'ParkingType',
+                oac:sessionStorage.getItem("name"),
+			}
+			let s = {
+                Ctype:'DataDicDetailQuery',
+                paramsort: 'SortType',
+                oac:sessionStorage.getItem("name"),
+            }
+			postApi( a, 
+				function(response){
+					//console.log(response)
+					if(response.data){
+						this.authOpts = response.data
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+				}.bind(this))
+			postApi( c, 
+				function(response){
+					//console.log(response)
+					if(response.data){
+						this.carOpts = response.data
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+				}.bind(this))
+			postApi( p, 
+				function(response){
+					//console.log(response)
+					if(response.data){
+						response.data.splice(0,1)
+						this.parkOpts = response.data
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+				}.bind(this))
+			postApi( s, 
+				function(response){
+					//console.log(response)
+					if(response.data){
+						this.sortOpts = response.data
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}
+				}.bind(this),function(error){
+				}.bind(this))
+		},
 		onLoadIn(obj){
 			this.tableLoading = true
 			postApi( obj, 
 				function(response){
-					//console.log(response)
+					console.log(response)
 					this.tableLoading = false
 					this.searchLoading = false
 					if(response.data.data){
 						let d = JSON.parse(response.data.data)
 						this.listData = d
-						this.totalListLength = d.length
+						this.totalListLength = response.data.totalrecords
 					}else if(response.data.error){
 						this.$Message.warning(response.data.error)
 					}
@@ -325,31 +423,31 @@ export default {
 		refuseItem(code){
 			let authdata = {
 				Ctype:'CarCodeMgrAuth',
-				carcodelist:code,
+				carcodelist: this.setcarcode,
 				authstate:'拒绝',
+				rejectreason: this.rejectReason,
 				oac:sessionStorage.getItem("name"),
 			}
-			this.$Modal.confirm({
-				title:'确认提示',
-				content:'拒绝审核？',
-				onOk: ()=> {
-					postApi( authdata, 
-                        function(response){
-							console.log(response)
-							if(response.data.ok){
-								this.$Message.info("操作成功！")
-								this.onLoadIn(this.queryData)
-							}else if(response.data.error){
-								this.$Message.warning(response.data.error)
-							}else{
-								this.$Message.warning(response.data)
-							}
-                        }.bind(this),function(error){
-							console.log(error)
-							
-                        }.bind(this))
-				}
-			})
+			this.modal_loading = true
+			postApi( authdata, 
+				function(response){
+					console.log(response)
+					this.modal_loading = false
+					this.rejectModal = false
+					if(response.data.ok){
+						this.$Message.info("操作成功！")
+						this.onLoadIn(this.queryData)
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}else{
+						this.$Message.warning(response.data)
+					}
+				}.bind(this),function(error){
+					console.log(error)
+					this.modal_loading = false
+					
+				}.bind(this))
+
 		},
 		onClickSearch(){
 			this.queryData.pageno = '1'
@@ -368,6 +466,53 @@ export default {
 			this.pageSize = e
 			this.queryData.pagesize = e
 			this.onLoadIn(this.queryData)
+		},
+		onClickRejectBtn(code){
+			this.setcarcode = code
+			this.rejectModal = true
+		},
+		onClickAuthMore(){
+			let arr = []
+			this.selectedData.forEach( item => {
+				arr.push(item.CarCode)
+			})
+			this.setcarcodelist = arr.join('，')
+			this.rejectReason = ''
+			this.rejectModalMore = true
+		},
+		refuseMore(){
+			if(this.selectedData.length===0){
+				return false
+			}
+			this.modal_loading = true
+			let arr = []
+			this.selectedData.forEach( item => {
+				arr.push(item.CarCode)
+			})
+			let authdata = {
+				Ctype:'CarCodeMgrAuth',
+				carcodelist:arr.toString(),
+				authstate:'拒绝',
+				oac:sessionStorage.getItem("name"),
+			}
+			postApi( authdata, 
+				function(response){
+					console.log(response)
+					this.modal_loading = false
+					this.rejectModalMore = false
+					if(response.data.ok){
+						this.$Message.info("操作成功！")
+						this.onLoadIn(this.queryData)
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}else{
+						this.$Message.warning(response.data)
+					}
+				}.bind(this),function(error){
+					console.log(error)
+					this.modal_loading = false
+					this.rejectModalMore = false
+				}.bind(this))
 		}
 	}
 }
