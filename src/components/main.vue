@@ -1,8 +1,8 @@
 <template>
     <div class="main">
         <div class="sidebar-menu-con"  :style="{width: hideMenuText?'60px':'200px', overflow: hideMenuText ? 'visible' : 'auto',}">
-			<SidebarMenu v-if="!hideMenuText"></SidebarMenu>
-			<SidebarMenuShrink v-else></SidebarMenuShrink>
+			<SidebarMenu v-show="!hideMenuText"></SidebarMenu>
+			<SidebarMenuShrink v-show="hideMenuText"></SidebarMenuShrink>
 		</div>
 		<div class="main-header-con" :style="{paddingLeft: hideMenuText ? '60px' : '200px'}">
 			<Button type="text" @click="toggleClick">
@@ -14,7 +14,7 @@
 					<div slot="title">欢迎您，{{username}}</div>
 					<div slot="content" class="poptip-content">
 						<ul>
-							<li><Icon type="person" size="16"></Icon> 个人信息</li>
+							<!-- <li><Icon type="person" size="16"></Icon> 个人信息</li> -->
 							<li @click="loginOut"><Icon type="power" size="14"></Icon> 退出登录</li>
 						</ul>
 					</div>
@@ -81,13 +81,21 @@ export default {
 		}
 	},
 	created(){
+		if(sessionStorage.getItem("name")){
+			this.username = sessionStorage.getItem("name")
+		}else{
+			this.$Message.info("请登录~~")
+			this.$router.replace({name:'Login'})
+		}
+
+
 		let winH = document.body.clientHeight;
 		let winW = document.body.clientWidth;
 		
 		//this.menuStyleObj.height = winH + 'px';
 		this.mainContentHeight.minHeight = winH - 169 +'px'
 		
-		this.username = sessionStorage.getItem("name")
+		
 		this.activeName = this.$route.name
 		switch(this.$route.name){
 			case "CarList":
@@ -105,7 +113,7 @@ export default {
 			case "Setting":
 				this.breadcrumbname = "系统设置"
 				break
-		}
+		} 
 	},
 	methods: {
 		toggleClick(){
