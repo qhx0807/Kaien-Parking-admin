@@ -4,9 +4,14 @@
             <p slot="title"><Icon type="search" size="16"></Icon> 查询</p>
            	<Form ref="formInline" :label-width="60">
 					<Row>
-						<Col span="3" style="padding-right:12px">
+						<Col span="3" style="padding-right:0px">
 							<FormItem label="车牌号" style="margin-bottom:0px">
-								<Input v-model="queryData.carcode" placeholder="请输入"></Input>
+								<Input v-model="queryData.carcode" @on-keyup.enter="onClickSearch" placeholder="车牌号"></Input>
+							</FormItem>
+						</Col>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="备注" style="margin-bottom:0px">
+								<Input v-model="queryData.remark"  @on-keyup.enter="onClickSearch" placeholder="备注关键字"></Input>
 							</FormItem>
 						</Col>
 						<Col span="3" style="padding-right:12px">
@@ -41,7 +46,7 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="3" style="padding-right:12px">
+						<Col span="3" style="padding-right:0px">
 							<FormItem label="审核状态" style="margin-bottom:0px">
 								<Select v-model="queryData.authstate">
 									<Option value="">全部</Option>
@@ -166,7 +171,7 @@
 						</Col>
 						<Col span="24">
 							<FormItem label="起始日期" style="margin-bottom:24px">
-								<DatePicker @on-change="onSelectDateAdd" style="width:100%" type="daterange" format="yyyy-MM-dd" placeholder="选择日期和时间"></DatePicker>
+								<DatePicker @on-change="onSelectDateEdit" v-model="editDateArr" style="width:100%" type="daterange" format="yyyy-MM-dd" placeholder="选择日期和时间"></DatePicker>
 							</FormItem>
 						</Col>
 						<Col span="24">
@@ -240,9 +245,9 @@ export default {
                         key: 'EndTime'
 					},
 					{
-						title: '逾期',
+						title: '逾期(月)',
 						key: 'expiremonths',
-						width:60,
+						width:85,
 					},
 					{
 						title: '分组信息',
@@ -257,7 +262,7 @@ export default {
 						}
 					},
 					{
-						title:'失效效日期',
+						title:'失效日期',
 						key:'EndDate',
 						width: 100,
 						render:(h, params) => {
@@ -343,7 +348,7 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.onEditShow(params.index)
+                                            this.onEditShow(params.row)
                                         }
                                     }
                                 }, '修改'),
@@ -354,7 +359,7 @@ export default {
                                     },
                                     on: {
                                         click: () => {
-                                            this.remove(params.index)
+                                            this.remove(params.row)
                                         }
                                     }
                                 }, '删除')
@@ -430,6 +435,10 @@ export default {
 			parkOpts:[],
 			sortOpts:[],
 			auth:[],
+			editDateArr: [
+				new Date('2017-09-20'),
+				new Date('2017-10-20')
+			],
 		}
 	},
 	created(){
@@ -568,13 +577,21 @@ export default {
 		onSelectItem(e){
 			this.selectedData = e
 		},
-		onEditShow(index){
-			console.log(this.listData[index])
-			this.editData.carcode = this.listData[index].CarCode
-			this.editData.cartype = this.listData[index].CarType
-			this.editData.remark = this.listData[index].Remark
-			this.editData.applyparkingtype = this.listData[index].applyParkingType
-			this.editData.authstate = this.listData[index].AuthState
+		onEditShow(e){
+			this.editData.carcode = e.CarCode
+			this.editData.cartype = e.CarType
+			this.editData.remark = e.Remark
+			this.editData.applyparkingtype = e.applyParkingType
+			this.editData.authstate = e.AuthState 
+			this.editData.sorttype = e.SortType
+
+			let arr = []
+			let sd = e.StartDate ? e.StartDate.substring(0,10) : ''
+			let ed = e.EndDate ? e.EndDate.substring(0,10) : ''
+			arr.push(new Date(sd))
+			arr.push(new Date(ed))
+			this.editDateArr = arr
+			//alert(arr)
 			this.editModal = true
 		},
 		onCliskSaveEdit(name){
@@ -606,7 +623,7 @@ export default {
                 }
             })
 		},
-		remove(index){
+		remove(e){
 			let removeData = {
 				Ctype:'CarCodeMgrModi',
 				carcode:'',
@@ -614,12 +631,15 @@ export default {
 				remark:'',
 				applyparkingtype:'临停车',
 				authstate:'',
+				sorttype:'',
 				oac:sessionStorage.getItem("name"),
 			}
-			removeData.carcode = this.listData[index].CarCode
-			removeData.cartype = this.listData[index].CarType
-			removeData.remark = this.listData[index].Remark
-			removeData.authstate = this.listData[index].AuthState
+			removeData.carcode = e.CarCode
+			removeData.cartype = e.CarType
+			removeData.remark = e.Remark
+			removeData.authstate = e.AuthState
+			removeData.sorttype = e.SortType
+			removeData.applyparkingtype = e.applyParkingType
 
 			this.$Modal.confirm({
 				title:'提示',
@@ -679,6 +699,8 @@ export default {
 		onSelectDateEdit(e){
 			this.editData.startdate = e[0]
 			this.editData.enddate = e[1]
+			//console.log(e)
+			//alert(this.editDateArr)
 		},
 	}
 }
