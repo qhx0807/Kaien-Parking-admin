@@ -72,8 +72,8 @@ export default {
 					width:100,
 				},
 				{
-					title: '日志ID',
-					key: 'ID',
+					title: 'ID',
+					key: 'id',
 					width:60,
 				},
 				{
@@ -97,7 +97,7 @@ export default {
 			listData:[],
 			totalListLength:0,
 			searchLoading:false,
-			pageSize:5,
+			pageSize:10,
 			currentPage:1,
 			pageSizeOpts:[5,10,15,20,30],
 			accountData:[],

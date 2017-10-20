@@ -124,9 +124,9 @@ export default {
 				title: '登出提示',
 				content: '<p>确认退出当前账号吗？</p>',
 				onOk: () => {
-					this.$Message.info('已退出')
 					window.sessionStorage.clear()
 					this.$router.replace({name:'Login'})
+					this.$Message.info('已退出')
 				}
 			})
 		}

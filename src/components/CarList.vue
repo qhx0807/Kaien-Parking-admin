@@ -4,12 +4,12 @@
             <p slot="title"><Icon type="search" size="16"></Icon> 查询</p>
            	<Form ref="formInline" :label-width="60">
 					<Row>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="车牌号" style="margin-bottom:0px">
 								<Input v-model="queryData.carcode" placeholder="请输入"></Input>
 							</FormItem>
 						</Col>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="车辆类型" style="margin-bottom:0px">
 								<Select v-model="queryData.cartype">
 									<Option value="">全部</Option>
@@ -17,7 +17,7 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="月票过期" style="margin-bottom:0px">
 								<Select v-model="queryData.monthlyticketexpiremonth">
 									<Option value="">全部</Option>
@@ -33,7 +33,7 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="停车类别" style="margin-bottom:0px">
 								<Select v-model="queryData.currentparkingtype">
 									<Option value="">全部</Option>
@@ -41,7 +41,7 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="审核状态" style="margin-bottom:0px">
 								<Select v-model="queryData.authstate">
 									<Option value="">全部</Option>
@@ -49,7 +49,15 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="3">
+						<Col span="3" style="padding-right:12px">
+							<FormItem label="分组" style="margin-bottom:0px">
+								<Select v-model="queryData.sorttype">
+									<Option value="">全部</Option>
+									<Option v-for="item in sortOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
+								</Select>
+							</FormItem>
+						</Col>
+						<Col span="1">
 							<Button type="primary" :loading="searchLoading" @click="onClickSearch" icon="ios-search">搜索</Button>
 						</Col>
 					</Row>
@@ -57,7 +65,7 @@
         </Card>
 		<Card :bordered="false" style="margin-top:16px;">
 			<div class="operation-wrap">
-				<Button type="primary" icon="plus" @click="onClickAdd">新增</Button>
+				<Button v-if="auth[7]==1" type="primary" icon="plus" @click="onClickAdd">新增</Button>
 				<Button type="primary" icon="ios-upload" style="margin-left:8px;"  @click="onClickImport">导入</Button>
 				<Button type="error" icon="trash-a" style="margin-left:8px;" @click="removeItems" :disabled="isDisabled">删除</Button>
 			</div>
@@ -175,12 +183,12 @@
 				<Button type="primary" size="default" :loading="modal_loading" @click="onCliskSaveEdit('fromEdit')">保存</Button>
 			</div>
 		</Modal>
-		<Modal v-model="importModal" width="600">
+		<Modal v-if="auth[7]==1" v-model="importModal" width="600">
 			<p slot="header" style="text-align:center">
 				<span>导入</span>
 			</p>
 			<div style="height:450px;"><!-- http:www.kaien.cc/DataImport.aspx -->
-				<iframe src="" name="importIframe" height="100%" scrolling="auto"  width="100%" frameborder="0"></iframe>
+				<iframe src="http://39.108.15.145/DataImport.aspx" name="importIframe" height="100%" scrolling="auto"  width="100%" frameborder="0"></iframe>
 			</div>
 			<div slot="footer">
 				<Button type="ghost" size="default"  @click="importModal=false">取消</Button>
@@ -264,10 +272,10 @@ export default {
 					{
 						title: '备注',
 						key: 'Remark',
-						width:200,
+						width:150,
 						render: (h, params) => {
-							const str = params.row.Remark.length > 20 ? params.row.Remark.substring(0,18)+'...' : params.row.Remark
-							const indent = params.row.Remark.length > 20 ? '20px' : '0'
+							const str = params.row.Remark.length > 15 ? params.row.Remark.substring(0,14)+'...' : params.row.Remark
+							const indent = params.row.Remark.length > 15 ? '20px' : '0'
 							return h('Tooltip', {
 								props: {
                                     placement: 'bottom'
@@ -295,7 +303,7 @@ export default {
 							if(params.row.RejectReason == null || params.row.RejectReason.length < 10){
 								return params.row.RejectReason
 							}else if(params.row.RejectReason && params.row.RejectReason.length >= 10){
-								let str = params.row.RejectReason.substring(0,18)+'...'
+								let str = params.row.RejectReason.substring(0,8)+'...'
 								return h('Tooltip', {
 									props: {
 										placement: 'bottom'
@@ -421,9 +429,15 @@ export default {
 			carOpts:[],
 			parkOpts:[],
 			sortOpts:[],
+			auth:[],
 		}
 	},
 	created(){
+		if(sessionStorage.auth){
+			this.auth = sessionStorage.auth.split('')
+		}else{
+			this.$Message.info("sessionStorage is not supported")
+		}
 		this.onLoadIn(this.queryData)
 		this.loadBaseData()
 	},

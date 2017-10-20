@@ -66,7 +66,7 @@ export default {
                     postApi( this.fromlogin, 
                         function(response){
                             this.submitLoading = false
-                            console.log(response)
+                            //console.log(response)
                             if(response.data.error){
                                 this.$Modal.error({
                                     title:'登录失败',
@@ -74,6 +74,13 @@ export default {
                                 })
                             }else if(response.data.ok){
                                 window.sessionStorage.setItem("name", this.fromlogin.account)
+                                window.sessionStorage.setItem("auth", response.data.ok)
+                                if(response.data.ok=='11111111'){
+                                    window.sessionStorage.setItem("isadmin", '1')
+                                }else{
+                                    window.sessionStorage.setItem("isadmin", '0')
+                                }
+                                //this.$store.commit('UPDATE_AUTH', [1,1,1,1,1,1,1,1])
                                 this.$router.replace({name: 'CarList'})
                             }else{
                                 this.$Message.warning(response.data)

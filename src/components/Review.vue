@@ -4,12 +4,12 @@
             <p slot="title"><Icon type="search" size="16"></Icon> 查询</p>
            	<Form ref="formInline" :label-width="60">
 					<Row>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="车牌号" style="margin-bottom:0px">
 								<Input v-model="queryData.carcode" placeholder="请输入"></Input>
 							</FormItem>
 						</Col>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="车辆类型" style="margin-bottom:0px">
 								<Select v-model="queryData.cartype">
 									<Option value="">全部</Option>
@@ -17,7 +17,7 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="月票过期" style="margin-bottom:0px">
 								<Select v-model="queryData.monthlyticketexpiremonth">
 									<Option value="">全部</Option>
@@ -33,7 +33,7 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="停车类别" style="margin-bottom:0px">
 								<Select v-model="queryData.applyparkingtype">
 									<Option value="">全部</Option>
@@ -41,9 +41,17 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="4" style="padding-right:12px">
+						<Col span="3" style="padding-right:12px">
 							<FormItem label="备注" style="margin-bottom:0px">
 								<Input v-model="queryData.remark" placeholder="请输入"></Input>
+							</FormItem>
+						</Col>
+						<Col span="3" style="padding-right:12px">
+							<FormItem label="分组" style="margin-bottom:0px">
+								<Select v-model="queryData.sorttype">
+									<Option value="">全部</Option>
+									<Option v-for="item in sortOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
+								</Select>
 							</FormItem>
 						</Col>
 						<Col span="3">
@@ -186,8 +194,8 @@ export default {
 						key: 'Remark',
 						width:200,
 						render: (h, params) => {
-							const str = params.row.Remark.length > 20 ? params.row.Remark.substring(0,18)+'...' : params.row.Remark
-							const indent = params.row.Remark.length > 20 ? '20px' : '0'
+							const str = params.row.Remark.length > 15 ? params.row.Remark.substring(0,14)+'...' : params.row.Remark
+							const indent = params.row.Remark.length > 15 ? '20px' : '0'
 							return h('Tooltip', {
 								props: {
                                     placement: 'bottom'

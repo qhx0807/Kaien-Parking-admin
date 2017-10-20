@@ -1,9 +1,29 @@
 <template>
     <Menu :active-name="activeName" theme="dark" width="auto" @on-select="selectMenu">
         <div class="layout-logo-left"></div>
-		<MenuItem v-for="item in menuList" :key="item.name" :name="item.name">
+		<!-- <MenuItem v-for="item in menuList" :key="item.name" :name="item.name">
 			<Icon :type="item.icon" :size="iconSize"></Icon>
             <span class="layout-text">{{item.text}}</span>
+		</MenuItem> -->
+		<MenuItem name="CarList" v-if="auth[0]==1 || auth[2]==1 || auth[4]==1">
+			<Icon type="android-car" :size="iconSize"></Icon>
+			<span class="layout-text">车辆列表</span>
+		</MenuItem>
+		<MenuItem name="Review" v-if="auth[1]==1 || auth[3]==1 || auth[5]==1">
+			<Icon type="ios-keypad" :size="iconSize"></Icon>
+			<span class="layout-text">操作审核</span>
+		</MenuItem>
+		<MenuItem name="Account" v-if="isadmin==1">
+			<Icon type="ios-person" :size="iconSize"></Icon>
+			<span class="layout-text">账户管理</span>
+		</MenuItem>
+		<MenuItem name="Log" v-if="auth[6]==1">
+			<Icon type="ios-calendar" :size="iconSize"></Icon>
+			<span class="layout-text">日志查询</span>
+		</MenuItem>
+		<MenuItem name="Setting"  v-if="isadmin==1">
+			<Icon type="ios-gear" :size="iconSize"></Icon>
+			<span class="layout-text">系统设置</span>
 		</MenuItem>
     </Menu>
 </template>
@@ -43,6 +63,17 @@ export default {
 					text:'系统设置',
 				},
 			],
+			auth:[],
+			isadmin:null,
+		}
+	},
+	created () {
+		if(sessionStorage.auth){
+			this.auth = sessionStorage.auth.split('')
+			this.isadmin = sessionStorage.isadmin
+		}else{
+			//this.$Message.info("请登录~~")
+			this.$router.replace({name:'Login'})
 		}
 	},
 	methods:{
@@ -58,7 +89,6 @@ export default {
 .ivu-menu-dark.ivu-menu-vertical
 	.ivu-menu-submenu-title-active:not(.ivu-menu-submenu) {
 	color: rgba(255, 255, 255, 0.7);
-	//border-right: 2px solid rgba(255, 255, 255, 0.7);
 }
 .layout-menu-left {
   background: #464c5b;
