@@ -35,7 +35,7 @@
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="停车类别" style="margin-bottom:0px">
-								<Select v-model="queryData.applyparkingtype">
+								<Select v-model="queryData.currentparkingtype">
 									<Option value="">全部</Option>
 									<Option v-for="item in parkOpts" :key="item.ID" :value="item.ParamValue">{{item.ParamValue}}</Option>
 								</Select>
@@ -179,8 +179,8 @@
 			<p slot="header" style="text-align:center">
 				<span>导入</span>
 			</p>
-			<div style="height:450px;">
-				<iframe src="http:www.kaien.cc/DataImport.aspx" name="importIframe" height="100%" scrolling="auto"  width="100%" frameborder="0"></iframe>
+			<div style="height:450px;"><!-- http:www.kaien.cc/DataImport.aspx -->
+				<iframe src="" name="importIframe" height="100%" scrolling="auto"  width="100%" frameborder="0"></iframe>
 			</div>
 			<div slot="footer">
 				<Button type="ghost" size="default"  @click="importModal=false">取消</Button>
@@ -210,14 +210,19 @@ export default {
 						key: 'CarCode',
 						width:100,
                     },
-                    {
-                        title: '车辆类型',
-                        key: 'CarType'
-                    },
-                    {
-                        title: '停车类别',
+					{
+						title: '申请停车类别',
+                        key: 'applyParkingType'
+					},
+					{
+                        title: '当前停车类别',
                         key: 'CurrentParkingType'
 					},
+                    {
+                        title: '类型',
+						key: 'CarType',
+						width: 60,
+                    },
 					{
                         title: '开始时间',
                         key: 'StartTime'
@@ -227,24 +232,34 @@ export default {
                         key: 'EndTime'
 					},
 					{
-						title: '逾期时间',
-                        key: 'expiremonths'
-					},
-					{
-						title: '申请停车类别',
-                        key: 'applyParkingType'
+						title: '逾期',
+						key: 'expiremonths',
+						width:60,
 					},
 					{
 						title: '分组信息',
                         key: 'SortType'
 					},
 					{
-						title:'修改到期日期',
-						key:'applyenddate'
+						title:'生效日期',
+						key:'StartDate',
+						width: 100,
+						render:(h, params) => {
+							return params.row.StartDate ? params.row.StartDate.substring(0,10) : ''
+						}
 					},
 					{
-						title: '审核状态',
-                        key: 'AuthState'
+						title:'失效效日期',
+						key:'EndDate',
+						width: 100,
+						render:(h, params) => {
+							return params.row.EndDate ? params.row.EndDate.substring(0,10) : ''
+						}
+					},
+					{
+						title: '状态',
+						key: 'AuthState',
+						width:80
 					},
 					{
 						title: '备注',
@@ -274,7 +289,34 @@ export default {
 					},
 					{
 						title:'驳回理由',
-						key:'rejectreason',
+						key:'RejectReason',
+						width:100,
+						render: (h, params) => {
+							if(params.row.RejectReason == null || params.row.RejectReason.length < 10){
+								return params.row.RejectReason
+							}else if(params.row.RejectReason && params.row.RejectReason.length >= 10){
+								let str = params.row.RejectReason.substring(0,18)+'...'
+								return h('Tooltip', {
+									props: {
+										placement: 'bottom'
+									}
+								}, [
+									h('div', str),
+									h('div',{
+										slot: 'content',
+										style: {
+											maxWidth: '250px',
+											wordBreak: 'break-all',
+											wordWrap: 'break-word',
+											whiteSpace:'normal',
+											textIndent: '10px',
+										},
+									}, params.row.RejectReason)
+								])
+							}
+
+							
+						}
 					},
 					{
                         title: '操作',
@@ -334,11 +376,11 @@ export default {
 				carcode:'',
 				pagesize:'5',
 				pageno:'1',
-				currentparkingtype:'',
+				applyparkingtype:'',
 				cartype:'',
 				remark:'',
 				monthlyticketexpiremonth:'',
-				applyparkingtype:'',
+				currentparkingtype:'',
 				sorttype:'',
 				authstate:'',
 				oac:sessionStorage.getItem("name"),

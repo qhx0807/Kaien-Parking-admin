@@ -127,16 +127,22 @@ export default {
                     },
                     {
                         title: '车牌号',
-                        key: 'CarCode'
-                    },
-                    {
-                        title: '车辆类型',
-                        key: 'CarType'
-                    },
-                    {
-                        title: '停车类别',
+						key: 'CarCode',
+						width:100,
+					},
+					{
+						title: '申请停车类别',
+                        key: 'applyParkingType'
+					},
+					{
+                        title: '当前停车类别',
                         key: 'CurrentParkingType'
 					},
+                    {
+                        title: '类型',
+						key: 'CarType',
+						width: 60,
+                    },
 					{
                         title: '开始时间',
                         key: 'StartTime'
@@ -146,20 +152,34 @@ export default {
                         key: 'EndTime'
 					},
 					{
-						title: '逾期时间',
-                        key: 'expiremonths'
+						title: '逾期',
+						key: 'expiremonths',
+						width:60,
 					},
 					{
-						title: '申请停车类别',
-                        key: 'applyParkingType'
-					},
-					{
-						title: '分组信息',
+						title: '分组',
                         key: 'SortType'
 					},
 					{
-						title: '审核状态',
-                        key: 'AuthState'
+						title:'生效日期',
+						key:'StartDate',
+						width: 100,
+						render:(h, params) => {
+							return params.row.StartDate ? params.row.StartDate.substring(0,10) : ''
+						}
+					},
+					{
+						title:'失效效日期',
+						key:'EndDate',
+						width: 100,
+						render:(h, params) => {
+							return params.row.EndDate ? params.row.EndDate.substring(0,10) : ''
+						}
+					},
+					{
+						title: '状态',
+						key: 'AuthState',
+						width:80
 					},
 					{
 						title: '备注',

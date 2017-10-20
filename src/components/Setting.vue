@@ -88,7 +88,7 @@ export default {
 				}.bind(this))
         },
         onClickTypeItem(index, type){
-            this.activeItem = index
+            
             let d = {
                 Ctype:'DataDicDetailQuery',
                 paramsort: type,
@@ -100,7 +100,8 @@ export default {
 					console.log(response)
 					this.pageLoading = false
 					if(response.data){
-						this.listData = response.data
+                        this.listData = response.data
+                        this.activeItem = index
 					}else if(response.data.error){
 						this.$Message.warning(response.error)
 					}else{

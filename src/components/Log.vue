@@ -68,8 +68,13 @@ export default {
 			columns:[
 				{
 					title: '账户',
-					key: 'AccountID',
+					key: 'Account',
 					width:100,
+				},
+				{
+					title: '日志ID',
+					key: 'ID',
+					width:60,
 				},
 				{
 					title: '时间',
