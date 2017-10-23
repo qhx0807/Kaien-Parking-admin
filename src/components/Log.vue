@@ -11,12 +11,12 @@
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="账户" style="margin-bottom:0px">
-								<Input v-model="queryData.account" placeholder="请输入"></Input>
+								<Input v-model="queryData.account"  @on-keyup.enter="onClickSearch" placeholder="请输入"></Input>
 							</FormItem>
 						</Col>
 						<Col span="4" style="padding-right:12px">
 							<FormItem label="车牌号" style="margin-bottom:0px">
-								<Input v-model="queryData.carcode" placeholder="请输入"></Input>
+								<Input v-model="queryData.carcode"  @on-keyup.enter="onClickSearch" placeholder="请输入"></Input>
 							</FormItem>
 						</Col>
 						<!-- <Col span="4" style="padding-right:12px">
