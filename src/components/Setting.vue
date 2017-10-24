@@ -25,7 +25,7 @@
                                     <Icon type="ios-trash"  v-if="item.isDelable==1"  @click.native="delCode(item)" class="del-icon" size="22" color="#ffffff"></Icon>
                                 </div>
                             </li>
-                            <li v-if="activeItem != -1 && isExtendable==1" class="add-li" @mouseover="addcolor='#424242'" @mouseout="addcolor='#cccccc'"><Icon size="50" :color="addcolor" type="android-add"></Icon></li>
+                            <li v-if="activeItem != -1 && isExtendable==1" @click="clickAddLi" class="add-li" @mouseover="addcolor='#424242'" @mouseout="addcolor='#cccccc'"><Icon size="50" :color="addcolor" type="android-add"></Icon></li>
                         </ul>
                     </div>
                     <div style="clear:both"></div>
@@ -43,6 +43,26 @@
             <div slot="footer">
 				<Button type="ghost" size="default"  @click="editModal=false">取消</Button>
 				<Button type="primary" size="default" :loading="modal_loading" @click="onCliskSaveEdit">保存</Button>
+			</div>
+        </Modal>
+        <Modal v-model="addModal" width="400">
+            <p slot="header" style="text-align:center">
+				<span>新增</span>
+			</p>
+            <div style="padding:0 20px 0 0">
+                <Form ref="fromAdd" :model="addData" :rules="ruleAdd" :label-width="40" label-position="right">
+                    <Row>
+                        <Col span="24" style="padding:0 ">
+							<FormItem prop="value" label="值" style="margin-bottom:24px">
+								<Input v-model="addData.value" placeholder="请输入"></Input>
+							</FormItem>
+						</Col>
+                    </Row>
+                </Form>
+            </div>
+            <div slot="footer">
+				<Button type="ghost" size="default"  @click="addModal=false">取消</Button>
+				<Button type="primary" size="default" :loading="modal_loading" @click="onCliskSaveAdd('fromAdd')">保存</Button>
 			</div>
         </Modal>
     </div> 
@@ -66,8 +86,17 @@ export default {
             listData:[],
             isExtendable:0,
             editModal:false,
+            addModal:false,
             editData:{},
             modal_loading:false,
+            addData:{
+                value:'',
+            },
+            ruleAdd:{
+                value:[
+                    { required: true, message: '请输入值', trigger: 'blur' }
+				],
+            },
         }
     },
     created () {
@@ -137,6 +166,17 @@ export default {
                 loading: true,
                 onOk: ()=> {
                     this.$Modal.remove();
+                }
+            })
+        },
+        clickAddLi(){
+            this.addModal = true
+        },
+        onCliskSaveAdd(name){
+            this.$refs[name].validate((valid) =>{
+                if(valid){
+                    //this.modal_loading = true
+                    this.$Message.info("建设中...")
                 }
             })
         }
