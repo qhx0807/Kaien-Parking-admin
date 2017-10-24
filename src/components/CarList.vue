@@ -676,27 +676,37 @@ export default {
 			this.selectedData.forEach( item => {
 				arr.push(item.CarCode)
 			})
-			//alert(arr)
 			
 			let removeListData = {
 				Ctype:'CarCodeMgrDel',
+				carcodelist: arr.toString(),
 				oac:sessionStorage.getItem("name"),
 			}
 
-			postApi( removeListData, 
-				function(response){
-					console.log(response)
-					if(response.data.ok){
-						this.$Message.info("移除成功！")
-						this.onLoadIn(this.queryData)
-					}else if(response.data.error){
-						this.$Message.warning(response.data.error)
-					}else{
-						this.$Message.warning(response.data)
-					}
-				}.bind(this),function(error){
-					console.log(error)
-				}.bind(this))
+			this.$Modal.confirm({
+				title: '确认删除提示',
+				content: '<p>您将移除选择车辆？</p>',
+				loading: true,
+				onOk: () => {
+					postApi( removeListData, 
+						function(response){
+							console.log(response)
+							this.$Modal.remove()
+							if(response.data.ok){
+								this.$Message.info("移除成功！")
+								this.onLoadIn(this.queryData)
+							}else if(response.data.error){
+								this.$Message.warning(response.data.error)	
+							}else{
+								this.$Message.warning(response.data)
+							}
+						}.bind(this),function(error){
+							this.$Modal.remove()
+							console.log(error)
+						}.bind(this))
+				}
+			})
+			
 
 		},
 		onClickSearch(){
