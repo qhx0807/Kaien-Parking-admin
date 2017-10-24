@@ -5,7 +5,7 @@
                 <Card :bordered="false">
                     <p slot="title">数据类别</p>
                     <ul class="data-type">
-                        <li v-for="(item, index) in typeData" :class="{active:activeItem==index}" :key="item.ParamCode" @click="onClickTypeItem(index,item.ParamCode)">{{item.ParamValue}}</li>
+                        <li v-for="(item, index) in typeData" :class="{active:activeItem==index}" :key="item.ParamCode" @click="onClickTypeItem(index,item.ParamCode,item.IsExtendable)">{{item.ParamValue}}</li>
                     </ul>
                 </Card>
             </Col>
@@ -21,17 +21,30 @@
                             <li v-for="(item, index) in listData" :key="item.ID" @mouseover="onMouseInItem(index)" @mouseout="onMouseOutItem(index)">
                                 {{item.ParamValue}}
                                 <div class="mask" v-show="maskShow==index">
-                                    <Icon type="edit" v-if="item.ismodiable==1" class="edit-icon" size="21" color="#ffffff"></Icon>
-                                    <Icon type="ios-trash"  v-if="item.isDelable==1" class="del-icon" size="22" color="#ffffff"></Icon>
+                                    <Icon type="edit" v-if="item.ismodiable==1" @click.native="editCode(item)" class="edit-icon" size="21" color="#ffffff"></Icon>
+                                    <Icon type="ios-trash"  v-if="item.isDelable==1"  @click.native="delCode(item)" class="del-icon" size="22" color="#ffffff"></Icon>
                                 </div>
                             </li>
-                            <li v-if="activeItem != -1" class="add-li" @mouseover="addcolor='#424242'" @mouseout="addcolor='#cccccc'"><Icon size="50" :color="addcolor" type="android-add"></Icon></li>
+                            <li v-if="activeItem != -1 && isExtendable==1" class="add-li" @mouseover="addcolor='#424242'" @mouseout="addcolor='#cccccc'"><Icon size="50" :color="addcolor" type="android-add"></Icon></li>
                         </ul>
                     </div>
                     <div style="clear:both"></div>
                 </Card>
             </Col>
         </Row>
+
+        <Modal v-model="editModal" width="400">
+            <p slot="header" style="text-align:center">
+				<span>修改</span>
+			</p>
+            <div>
+                <Input v-model="editData.ParamValue" placeholder="请输入"></Input>
+            </div>
+            <div slot="footer">
+				<Button type="ghost" size="default"  @click="editModal=false">取消</Button>
+				<Button type="primary" size="default" :loading="modal_loading" @click="onCliskSaveEdit">保存</Button>
+			</div>
+        </Modal>
     </div> 
 </template>
 
@@ -51,23 +64,14 @@ export default {
             },
             pageLoading:false,
             listData:[],
+            isExtendable:0,
+            editModal:false,
+            editData:{},
+            modal_loading:false,
         }
     },
     created () {
         this.getListData(this.queryData)
-        Array.prototype.unique = function(){
-        var res = [];
-        var json = {};
-        for(var i = 0; i < this.length; i++){
-            if(!json[this[i]]){
-                res.push(this[i]);
-                json[this[i]] = 1;
-            }
-        }
-            return res;
-        }
-        var arr = [112,112,34,'你好',112,112,34,'你好','str','str1'];
-        //alert(arr.unique());
     },
     methods:{
         getListData(obj){
@@ -87,8 +91,8 @@ export default {
 					this.pageLoading = false
 				}.bind(this))
         },
-        onClickTypeItem(index, type){
-            
+        onClickTypeItem(index, type, isExt){
+            this.isExtendable = isExt
             let d = {
                 Ctype:'DataDicDetailQuery',
                 paramsort: type,
@@ -97,7 +101,7 @@ export default {
              this.pageLoading = true
             postApi( d, 
 				function(response){
-					console.log(response)
+					//console.log(response)
 					this.pageLoading = false
 					if(response.data){
                         this.listData = response.data
@@ -116,6 +120,25 @@ export default {
         },
         onMouseOutItem(index){
             this.maskShow = -1
+        },
+        editCode(item){
+            console.log(item)
+            this.editData = item
+            this.editModal = true
+        },
+        onCliskSaveEdit(){
+            //this.modal_loading = true
+            this.$Message.info("建设中...")
+        },
+        delCode(item){
+            this.$Modal.confirm({
+                title: '确认删除提示',
+                content: '<p>您将删除此条数据？</p>',
+                loading: true,
+                onOk: ()=> {
+                    this.$Modal.remove();
+                }
+            })
         }
     }
 }

@@ -584,6 +584,8 @@ export default {
 			this.editData.applyparkingtype = e.applyParkingType
 			this.editData.authstate = e.AuthState 
 			this.editData.sorttype = e.SortType
+			//this.editData.StartDate = e.StartDate
+			//this.editData.EndDate = e.EndDate
 
 			let arr = []
 			let sd = e.StartDate ? e.StartDate.substring(0,10) : ''
@@ -631,15 +633,19 @@ export default {
 				remark:'',
 				applyparkingtype:'临停车',
 				authstate:'',
+				startdate:'',
+				enddate:'',
 				sorttype:'',
 				oac:sessionStorage.getItem("name"),
 			}
+
 			removeData.carcode = e.CarCode
 			removeData.cartype = e.CarType
 			removeData.remark = e.Remark
 			removeData.authstate = e.AuthState
 			removeData.sorttype = e.SortType
-			removeData.applyparkingtype = e.applyParkingType
+			//removeData.startdate = e.startdate
+			//removeData.enddate = e.enddate
 
 			this.$Modal.confirm({
 				title:'提示',
@@ -647,16 +653,17 @@ export default {
 				onOk: ()=>{
 					postApi( removeData, 
                         function(response){
-							console.log(response)
+							//console.log(response)
 							if(response.data.ok){
 								this.$Message.info("移除成功！")
 								this.onLoadIn(this.queryData)
 							}else if(response.data.error){
 								this.$Message.warning(response.data.error)
+							}else{
+								this.$Message.warning(response.data)
 							}
                         }.bind(this),function(error){
 							console.log(error)
-							
                         }.bind(this))
 				}
 			})
@@ -669,7 +676,28 @@ export default {
 			this.selectedData.forEach( item => {
 				arr.push(item.CarCode)
 			})
-			alert(arr)
+			//alert(arr)
+			
+			let removeListData = {
+				Ctype:'CarCodeMgrDel',
+				oac:sessionStorage.getItem("name"),
+			}
+
+			postApi( removeListData, 
+				function(response){
+					console.log(response)
+					if(response.data.ok){
+						this.$Message.info("移除成功！")
+						this.onLoadIn(this.queryData)
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}else{
+						this.$Message.warning(response.data)
+					}
+				}.bind(this),function(error){
+					console.log(error)
+				}.bind(this))
+
 		},
 		onClickSearch(){
 			this.queryData.pageno = '1'

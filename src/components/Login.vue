@@ -1,12 +1,8 @@
 <template>
     <div class="wrap">
-        <!-- <div class="login">
-            <div>后台管理系统</div>
-             <Button type="primary">Primary</Button>
-        </div> -->
         <canvas id="canvas"></canvas>
         <Card class="login">
-            <div class="login-title">WXPARKING ADMIN</div>
+            <div class="login-title">铠恩国际停车管理系统</div>
             <Form ref="fromlogin" :model="fromlogin" :rules="ruleLogin">
                 <FormItem prop="account">
                     <Input type="text" v-model="fromlogin.account" placeholder="Username">
