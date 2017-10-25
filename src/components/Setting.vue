@@ -53,8 +53,8 @@
                 <Form ref="fromAdd" :model="addData" :rules="ruleAdd" :label-width="40" label-position="right">
                     <Row>
                         <Col span="24" style="padding:0 ">
-							<FormItem prop="value" label="值" style="margin-bottom:24px">
-								<Input v-model="addData.value" placeholder="请输入"></Input>
+							<FormItem prop="paramvalue" label="值" style="margin-bottom:24px">
+								<Input v-model="addData.paramvalue" placeholder="请输入"></Input>
 							</FormItem>
 						</Col>
                     </Row>
@@ -90,13 +90,17 @@ export default {
             editData:{},
             modal_loading:false,
             addData:{
-                value:'',
+                Ctype:'ParamAdd',
+                sorttype:'',
+                paramvalue:'',
+                oac:sessionStorage.getItem("name"),
             },
             ruleAdd:{
-                value:[
+                paramvalue:[
                     { required: true, message: '请输入值', trigger: 'blur' }
 				],
             },
+            getDetailData:{},
         }
     },
     created () {
@@ -122,11 +126,13 @@ export default {
         },
         onClickTypeItem(index, type, isExt){
             this.isExtendable = isExt
+            this.addData.sorttype = type
             let d = {
                 Ctype:'DataDicDetailQuery',
                 paramsort: type,
                 oac:sessionStorage.getItem("name"),
             }
+            this.getDetailData = d
              this.pageLoading = true
             postApi( d, 
 				function(response){
@@ -156,29 +162,107 @@ export default {
             this.editModal = true
         },
         onCliskSaveEdit(){
-            //this.modal_loading = true
-            this.$Message.info("建设中...")
+            if(!this.editData.ParamValue){
+                this.$Message.info("请输入...")
+                return false
+            }
+            this.modal_loading = true
+            let d = {
+                Ctype:'ParamModi',
+                id:this.editData.ID,
+                oac:sessionStorage.getItem("name"),
+                paramvalue: this.editData.ParamValue,
+            }
+            postApi( d, 
+				function(response){
+					console.log(response)
+                    this.modal_loading = false
+                    this.editModal = false
+					if(response.data.ok){
+                        this.$Message.info("修改成功！")
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}else{
+                        this.$Message.warning(response)
+                    }
+                    this.getDetail(this.getDetailData)
+				}.bind(this),function(error){
+                    this.getDetail(this.getDetailData)
+                    this.modal_loading = false
+                    this.editModal = false
+				}.bind(this))
         },
         delCode(item){
+            let d = {
+                Ctype:'ParamDel',
+                id:this.item.ID,
+            }
             this.$Modal.confirm({
                 title: '确认删除提示',
                 content: '<p>您将删除此条数据？</p>',
                 loading: true,
                 onOk: ()=> {
-                    this.$Modal.remove();
+                    postApi( d, 
+                        function(response){
+                            console.log(response)
+                             this.$Modal.remove();
+                            if(response.data.ok){
+                                this.$Message.info("删除成功！")
+                            }else if(response.data.error){
+                                this.$Message.warning(response.data.error)
+                            }else{
+                                this.$Message.warning(response)
+                            }
+                            this.getDetail(this.getDetailData)
+                        }.bind(this),function(error){
+                             this.$Modal.remove();
+                        }.bind(this))
                 }
             })
         },
         clickAddLi(){
+            this.addData.paramvalue = ''
             this.addModal = true
         },
         onCliskSaveAdd(name){
             this.$refs[name].validate((valid) =>{
                 if(valid){
-                    //this.modal_loading = true
-                    this.$Message.info("建设中...")
+                    this.modal_loading = true
+                    postApi( this.addData, 
+                        function(response){
+                            console.log(response)
+                            this.modal_loading = false
+                            this.addModal = false
+                            if(response.data.ok){
+                                this.$Message.info("已添加！")
+                            }else if(response.data.error){
+                                this.$Message.warning(response.data.error)
+                            }else{
+                                this.$Message.warning(response)
+                            }
+                            this.getDetail(this.getDetailData)
+                        }.bind(this),function(error){
+                            this.modal_loading = false
+                            this.addModal = false
+                        }.bind(this))
                 }
             })
+        },
+        getDetail(obj){
+            this.pageLoading = true
+            postApi( obj, 
+				function(response){
+					this.pageLoading = false
+					if(response.data){
+                        this.listData = response.data
+					}else if(response.data.error){
+						this.$Message.warning(response.data.error)
+					}else{
+                        this.$Message.warning(response)
+                    }
+				}.bind(this),function(error){
+					this.pageLoading = false
+				}.bind(this))
         }
     }
 }
