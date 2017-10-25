@@ -400,7 +400,8 @@ export default {
 			},
 			ruleAdd:{
 				carcode:[
-                    { required: true, message: '请输入车牌号', trigger: 'blur' }
+					{ required: true, message: '请输入车牌号', trigger: 'blur' },
+					{ type: 'string', min: 7, max: 7,  message: '车牌号为七位字符', trigger: 'blur' }
 				],
 				cartype:[
 					{ required: true, message: '请选择车辆类型', trigger: 'blur' }
