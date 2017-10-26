@@ -195,7 +195,7 @@ export default {
         delCode(item){
             let d = {
                 Ctype:'ParamDel',
-                id:this.item.ID,
+                id: item.ID,
             }
             this.$Modal.confirm({
                 title: '确认删除提示',
