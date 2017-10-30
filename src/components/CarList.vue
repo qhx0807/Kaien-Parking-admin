@@ -70,8 +70,8 @@
         </Card>
 		<Card :bordered="false" style="margin-top:16px;">
 			<div class="operation-wrap">
-				<Button v-if="auth[7]==1" type="primary" icon="plus" @click="onClickAdd">新增</Button>
-				<Button type="primary" icon="ios-upload" style="margin-left:8px;"  @click="onClickImport">导入</Button>
+				<Button type="primary" icon="plus" @click="onClickAdd">新增</Button>
+				<Button  v-if="auth[7]==1" type="primary" icon="ios-upload" style="margin-left:8px;"  @click="onClickImport">导入</Button>
 				<Button type="error" icon="trash-a" style="margin-left:8px;" @click="removeItems" :disabled="isDisabled">删除</Button>
 			</div>
 			<div class="table-wrap">
