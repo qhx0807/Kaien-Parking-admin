@@ -278,7 +278,7 @@ export default {
 					postApi( this.editData, 
                         function(response){
                             this.modal_loading = false
-							//console.log(response)
+							console.log(response)
 							this.editModal = false
 							if(response.data.ok){
 								this.$Message.info("修改成功！")

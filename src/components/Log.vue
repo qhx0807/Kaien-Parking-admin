@@ -123,7 +123,6 @@ export default {
 			this.tableLoading = true
 			postApi( obj, 
 				function(response){
-					console.log(response)
 					this.tableLoading = false
 					this.searchLoading = false
 					if(response.data.data){

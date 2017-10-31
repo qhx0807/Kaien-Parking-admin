@@ -61,6 +61,7 @@
 <script>
 import SidebarMenu from './main_components/SidebarMenu.vue'
 import SidebarMenuShrink from './main_components/SidebarMenuShrink.vue'
+import { postApi } from '../axios'
 export default {
 	name: "Main",
 	components:{
@@ -165,26 +166,36 @@ export default {
 			this.editPassModal = true
 		},
 		onCliskSave(name){
+			let d = {
+				id:'',
+				Ctype:'ModiAccount',
+				account:sessionStorage.getItem("name"),
+				password: this.editData.password.trim(),
+				authcode: sessionStorage.getItem("auth"),
+				oac:sessionStorage.getItem("name"),
+			}
 			this.$refs[name].validate((valid) =>{
                 if(valid){
-					alert(this.editData.password.trim())
-                    // this.modal_loading = true
-                    // postApi(  1, 
-                    //     function(response){
-                    //         console.log(response)
-                    //         this.modal_loading = false
-                    //         this.editPassModal = false
-                    //         if(response.data.ok){
-                    //             this.$Message.info("修改成功！")
-                    //         }else if(response.data.error){
-                    //             this.$Message.warning(response.data.error)
-                    //         }else{
-                    //             this.$Message.warning(response)
-                    //         }
-                    //     }.bind(this),function(error){
-                    //         this.modal_loading = false
-                    //         this.editPassModal = false
-                    //     }.bind(this))
+					//alert(this.editData.password.trim())
+                    this.modal_loading = true
+                    postApi(  d, 
+                        function(response){
+                            console.log(response)
+                            this.modal_loading = false
+                            this.editPassModal = false
+                            if(response.data.ok){
+								window.sessionStorage.clear()
+								this.$Message.info("修改成功！请重新登录~")
+								this.$router.replace({name: 'Login'})
+                            }else if(response.data.error){
+                                this.$Message.warning(response.data.error)
+                            }else{
+                                this.$Message.warning(response)
+                            }
+                        }.bind(this),function(error){
+                            this.modal_loading = false
+                            this.editPassModal = false
+                        }.bind(this))
                 }
             })
 		}
