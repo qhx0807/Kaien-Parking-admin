@@ -240,11 +240,13 @@ export default {
                     },
 					{
                         title: '开始时间',
-                        key: 'StartTime'
+						key: 'StartTime',
+						width:150,
 					},
 					{
 						title: '结束时间',
-                        key: 'EndTime'
+						key: 'EndTime',
+						width:150,
 					},
 					{
 						title: '逾期(月)',
@@ -253,7 +255,8 @@ export default {
 					},
 					{
 						title: '分组信息',
-                        key: 'SortType'
+						key: 'SortType',
+						width:100,
 					},
 					{
 						title:'生效日期',
@@ -279,10 +282,10 @@ export default {
 					{
 						title: '备注',
 						key: 'Remark',
-						width:150,
+						width: 150,
 						render: (h, params) => {
-							const str = params.row.Remark.length > 15 ? params.row.Remark.substring(0,14)+'...' : params.row.Remark
-							const indent = params.row.Remark.length > 15 ? '20px' : '0'
+							const str = params.row.Remark && params.row.Remark.length > 15 ? params.row.Remark.substring(0,14)+'...' : params.row.Remark
+							const indent = params.row.Remark && params.row.Remark.length > 15 ? '20px' : '0'
 							return h('Tooltip', {
 								props: {
                                     placement: 'bottom'
@@ -305,7 +308,7 @@ export default {
 					{
 						title:'驳回理由',
 						key:'RejectReason',
-						width:100,
+						width: 150,
 						render: (h, params) => {
 							if(params.row.RejectReason == null || params.row.RejectReason.length < 10){
 								return params.row.RejectReason
@@ -581,9 +584,10 @@ export default {
 			this.selectedData = e
 		},
 		onEditShow(e){
+			console.log(e)
 			this.editData.carcode = e.CarCode
 			this.editData.cartype = e.CarType
-			this.editData.remark = e.Remark
+			this.editData.remark = e.Remark || ''
 			this.editData.applyparkingtype = e.applyParkingType
 			this.editData.authstate = e.AuthState 
 			this.editData.sorttype = e.SortType

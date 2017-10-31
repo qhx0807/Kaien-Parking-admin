@@ -141,11 +141,13 @@ export default {
 					},
 					{
 						title: '申请停车类别',
-                        key: 'applyParkingType'
+						key: 'applyParkingType',
+						width: 150,
 					},
 					{
                         title: '当前停车类别',
-                        key: 'CurrentParkingType'
+						key: 'CurrentParkingType',
+						width: 150,
 					},
                     {
                         title: '类型',
@@ -154,11 +156,13 @@ export default {
                     },
 					{
                         title: '开始时间',
-                        key: 'StartTime'
+						key: 'StartTime',
+						width: 150,
 					},
 					{
 						title: '结束时间',
-                        key: 'EndTime'
+						key: 'EndTime',
+						width: 150,
 					},
 					{
 						title: '逾期(月)',
@@ -167,7 +171,8 @@ export default {
 					},
 					{
 						title: '分组',
-                        key: 'SortType'
+						key: 'SortType',
+						width: 100,
 					},
 					{
 						title:'生效日期',

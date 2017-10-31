@@ -190,7 +190,7 @@ export default {
                             }else if(response.data.error){
                                 this.$Message.warning(response.data.error)
                             }else{
-                                this.$Message.warning(response)
+                                this.$Message.warning(response.data)
                             }
                         }.bind(this),function(error){
                             this.modal_loading = false
