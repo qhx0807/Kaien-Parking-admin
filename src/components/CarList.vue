@@ -225,11 +225,13 @@ export default {
                     },
 					{
 						title: '申请停车类别',
-                        key: 'applyParkingType'
+                        key: 'applyParkingType',
+						width:120,
 					},
 					{
                         title: '当前停车类别',
-                        key: 'CurrentParkingType'
+						key: 'CurrentParkingType',
+						width:120,
 					},
                     {
                         title: '类型',

@@ -14,8 +14,8 @@
 					<div slot="title">欢迎您，{{username}}</div>
 					<div slot="content" class="poptip-content">
 						<ul>
-							<!-- <li><Icon type="person" size="16"></Icon> 个人信息</li> -->
-							<li @click="loginOut"><Icon type="power" size="14"></Icon> 退出登录</li>
+							<li @click="editPassWord"><Icon type="ios-locked" size="16"></Icon>&nbsp;&nbsp;修改密码</li>
+							<li @click="loginOut"><Icon type="power" size="14"></Icon>&nbsp;退出登录</li>
 						</ul>
 					</div>
 				</Poptip>
@@ -35,6 +35,26 @@
                 </div>
 			</div>
 		</div>
+		<Modal v-model="editPassModal" width="400">
+            <p slot="header" style="text-align:center">
+				<span>修改密码</span>
+			</p>
+            <div style="padding:0 20px 0 0">
+                <Form ref="fromEdit" :model="editData" :rules="ruleEdit" :label-width="80" label-position="right">
+                    <Row>
+                        <Col span="24" style="padding:0 ">
+							<FormItem prop="password" label="输入密码" style="margin-bottom:24px">
+								<Input type="password" v-model="editData.password" placeholder="请输入"></Input>
+							</FormItem>
+						</Col>
+                    </Row>
+                </Form>
+            </div>
+            <div slot="footer">
+				<Button type="ghost" size="default"  @click="editPassModal=false">取消</Button>
+				<Button type="primary" size="default" :loading="modal_loading" @click="onCliskSave('fromEdit')">保存</Button>
+			</div>
+        </Modal>
     </div>
 </template>
 
@@ -56,6 +76,16 @@ export default {
 			mainContentHeight:{
 				minHeight:'',
 			},
+			editData:{
+				password:'',
+			},
+			editPassModal:false,
+			ruleEdit:{
+				password:[
+                    { required: true, message: '密码不能为空', trigger: 'blur' }
+				],
+			},
+			modal_loading:false,
 		}
 	},
 	watch:{
@@ -129,6 +159,34 @@ export default {
 					this.$Message.info('已退出')
 				}
 			})
+		},
+		editPassWord(){
+			this.editData.password = ''
+			this.editPassModal = true
+		},
+		onCliskSave(name){
+			this.$refs[name].validate((valid) =>{
+                if(valid){
+					alert(this.editData.password.trim())
+                    // this.modal_loading = true
+                    // postApi(  1, 
+                    //     function(response){
+                    //         console.log(response)
+                    //         this.modal_loading = false
+                    //         this.editPassModal = false
+                    //         if(response.data.ok){
+                    //             this.$Message.info("修改成功！")
+                    //         }else if(response.data.error){
+                    //             this.$Message.warning(response.data.error)
+                    //         }else{
+                    //             this.$Message.warning(response)
+                    //         }
+                    //     }.bind(this),function(error){
+                    //         this.modal_loading = false
+                    //         this.editPassModal = false
+                    //     }.bind(this))
+                }
+            })
 		}
 	}
 };

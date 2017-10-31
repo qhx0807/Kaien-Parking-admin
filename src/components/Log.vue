@@ -4,9 +4,19 @@
             <p slot="title"><Icon type="search" size="16"></Icon> 查询</p>
            	<Form ref="formInline" :label-width="60">
 					<Row>
-						<Col span="5" style="padding-right:12px">
+						<!-- <Col span="5" style="padding-right:12px">
 							<FormItem label="日期" style="margin-bottom:0px">
 								<DatePicker type="daterange" :options="dateOpts" @on-change="onSelectDate" style="width: 100%" format="yyyy-MM-dd" placeholder="选择起始日期"></DatePicker>
+							</FormItem>
+						</Col> -->
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="开始日期" style="margin-bottom:0px">
+								<DatePicker type="date" :options="dateOpts" @on-change="onSelectStartDate" style="width: 100%" format="yyyy-MM-dd" placeholder="选择开始日期"></DatePicker>
+							</FormItem>
+						</Col>
+						<Col span="4" style="padding-right:12px">
+							<FormItem label="结束日期" style="margin-bottom:0px">
+								<DatePicker type="date" :options="dateOpts" :value.sync="endDate" @on-change="onSelectEndDate" style="width: 100%" format="yyyy-MM-dd" placeholder="选择结束日期"></DatePicker>
 							</FormItem>
 						</Col>
 						<Col span="4" style="padding-right:12px">
@@ -101,6 +111,7 @@ export default {
 			currentPage:1,
 			pageSizeOpts:[5,10,15,20,30],
 			accountData:[],
+			endDate:new Date(),
 		}
 	},
 	created(){
@@ -121,6 +132,8 @@ export default {
 						this.totalListLength = response.data.totalrecords
 					}else if(response.data.error){
 						this.$Message.warning(response.data.error)
+					}else{
+						//this.$Message.warning(response.data)
 					}
 				}.bind(this),function(error){
 					this.tableLoading = false
@@ -149,8 +162,8 @@ export default {
 		},
 		onClickSearch(){
 			this.queryData.pageno = '1'
-			this.queryData.pagesize = '5'
-			this.pageSize = 5
+			this.queryData.pagesize = '10'
+			this.pageSize = 10
 			this.currentPage = 1
 			this.searchLoading = true
 			this.tableLoading = true
@@ -165,7 +178,13 @@ export default {
 			this.pageSize = e
 			this.queryData.pagesize = e
 			this.onLoad(this.queryData)
-		}
+		},
+		onSelectStartDate(e){
+			this.queryData.starttime = e
+		},
+		onSelectEndDate(e){
+			this.queryData.endtime = e
+		},
 	}
 }
 </script>
