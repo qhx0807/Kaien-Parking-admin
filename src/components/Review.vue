@@ -67,7 +67,7 @@
 				<Button type="error" icon="close" style="margin-left:8px;" @click="onClickAuthMore" :disabled="isDisabled">驳回</Button>
 			</div>
 			<div class="table-wrap">
-				<Table size="default"  @on-selection-change="onSelectItem" :loading="tableLoading" :columns="columns" :data="listData"></Table>
+				<Table size="default"  width="100%"  @on-selection-change="onSelectItem" :loading="tableLoading" :columns="columns" :data="listData"></Table>
 				<div style="margin: 10px;overflow: hidden">
 					<div style="float: right;">
 						<Page :total="totalListLength" :page-size-opts="pageSizeOpts" :page-size="pageSize" :current="currentPage" size="small" show-sizer show-total @on-change="changePage" @on-page-size-change="onPageSizeChange"></Page>
@@ -132,7 +132,8 @@ export default {
 					{
                         type: 'selection',
                         width: 60,
-                        align: 'center'
+						align: 'center',
+						fixed:'left',
                     },
                     {
                         title: '车牌号',
@@ -152,22 +153,23 @@ export default {
                     {
                         title: '类型',
 						key: 'CarType',
-						width: 60,
+						width: 70,
+						
                     },
 					{
                         title: '开始时间',
 						key: 'StartTime',
-						width: 150,
+						width: 160,
 					},
 					{
 						title: '结束时间',
 						key: 'EndTime',
-						width: 150,
+						width: 160,
 					},
 					{
 						title: '逾期(月)',
 						key: 'expiremonths',
-						width:85,
+						width:100,
 					},
 					{
 						title: '分组',
@@ -177,7 +179,7 @@ export default {
 					{
 						title:'生效日期',
 						key:'StartDate',
-						width: 100,
+						width: 150,
 						render:(h, params) => {
 							return params.row.StartDate ? params.row.StartDate.substring(0,10) : ''
 						}
@@ -185,7 +187,7 @@ export default {
 					{
 						title:'失效日期',
 						key:'EndDate',
-						width: 100,
+						width: 150,
 						render:(h, params) => {
 							return params.row.EndDate ? params.row.EndDate.substring(0,10) : ''
 						}
@@ -225,7 +227,8 @@ export default {
                         title: '操作',
                         key: 'action',
                         width: 150,
-                        align: 'center',
+						align: 'center',
+						fixed:'right',
                         render: (h, params) => {
                             return h('div', [
                                 h('Button', {
