@@ -117,10 +117,20 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="24">
+						<!-- <Col span="24">
 							<FormItem label="起始日期" style="margin-bottom:24px">
 								<DatePicker @on-change="onSelectDateAdd" style="width:100%" type="daterange" format="yyyy-MM-dd" placeholder="选择日期和时间"></DatePicker>
 							</FormItem>
+						</Col> -->
+						<Col span="24">
+							<FormItem label="开始日期" style="margin-bottom:24px">
+							 	<DatePicker type="date" @on-change="on_select_StartDate_add" style="width:100%" placeholder="开始日期" v-model="add_start_date"></DatePicker>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem label="结束日期" style="margin-bottom:24px">
+								<DatePicker type="date" @on-change="on_select_EndDate_add" style="width:100%" placeholder="结束日期" v-model="add_end_date"></DatePicker>
+							 </FormItem>
 						</Col>
 						<Col span="24">
 							<FormItem label="备注说明" style="margin-bottom:24px">
@@ -169,10 +179,20 @@
 								</Select>
 							</FormItem>
 						</Col>
-						<Col span="24">
+						<!-- <Col span="24">
 							<FormItem label="起始日期" style="margin-bottom:24px">
 								<DatePicker @on-change="onSelectDateEdit" v-model="editDateArr" style="width:100%" type="daterange" format="yyyy-MM-dd" placeholder="选择日期和时间"></DatePicker>
 							</FormItem>
+						</Col> -->
+						<Col span="24">
+							<FormItem label="开始日期" style="margin-bottom:24px">
+							 	<DatePicker type="date"  @on-change="on_select_StartDate_edit" style="width:100%" placeholder="开始日期" v-model="mod_start_date"></DatePicker>
+							</FormItem>
+						</Col>
+						<Col span="24">
+							<FormItem label="结束日期" style="margin-bottom:24px">
+								<DatePicker type="date" @on-change="on_select_EndDate_edit" style="width:100%" placeholder="结束日期" v-model="mod_end_date"></DatePicker>
+							 </FormItem>
 						</Col>
 						<Col span="24">
 							<FormItem label="备注说明" style="margin-bottom:24px">
@@ -447,6 +467,10 @@ export default {
 				new Date('2017-09-20'),
 				new Date('2017-10-20')
 			],
+			add_start_date:null,
+			add_end_date:null,
+			mod_start_date:null,
+			mod_end_date:null,
 		}
 	},
 	created(){
@@ -599,10 +623,15 @@ export default {
 			let arr = []
 			let sd = e.StartDate ? e.StartDate.substring(0,10) : ''
 			let ed = e.EndDate ? e.EndDate.substring(0,10) : ''
-			arr.push(new Date(sd))
-			arr.push(new Date(ed))
-			this.editDateArr = arr
+			// arr.push(new Date(sd))
+			// arr.push(new Date(ed))
+			// this.editDateArr = arr
 			//alert(arr)
+			this.editData.startdate =  sd
+			this.editData.enddate = ed
+			
+			this.mod_start_date = new Date(sd)
+			this.mod_end_date = new Date(ed)
 			this.editModal = true
 		},
 		onCliskSaveEdit(name){
@@ -748,6 +777,18 @@ export default {
 			this.editData.enddate = e[1]
 			//console.log(e)
 			//alert(this.editDateArr)
+		},
+		on_select_StartDate_add(e){
+			this.addData.startdate = e
+		},
+		on_select_EndDate_add(e){
+			this.addData.enddate = e
+		},
+		on_select_StartDate_edit(e){
+			this.editData.startdate = e
+		},
+		on_select_EndDate_edit(e){
+			this.editData.enddate = e
 		},
 	}
 }
