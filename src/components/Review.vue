@@ -193,6 +193,14 @@ export default {
 						}
 					},
 					{
+						title:'失效日期变更',
+						key:'ApplyEndDate',
+						width: 150,
+						render:(h, params) => {
+							return params.row.ApplyEndDate ? params.row.ApplyEndDate.substring(0,10) : ''
+						}
+					},
+					{
 						title: '状态',
 						key: 'AuthState',
 						width:80

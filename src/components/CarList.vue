@@ -123,12 +123,12 @@
 							</FormItem>
 						</Col> -->
 						<Col span="24">
-							<FormItem label="开始日期" style="margin-bottom:24px">
+							<FormItem label="生效日期" style="margin-bottom:24px">
 							 	<DatePicker type="date" @on-change="on_select_StartDate_add" style="width:100%" placeholder="开始日期" v-model="add_start_date"></DatePicker>
 							</FormItem>
 						</Col>
 						<Col span="24">
-							<FormItem label="结束日期" style="margin-bottom:24px">
+							<FormItem label="失效日期" style="margin-bottom:24px">
 								<DatePicker type="date" @on-change="on_select_EndDate_add" style="width:100%" placeholder="结束日期" v-model="add_end_date"></DatePicker>
 							 </FormItem>
 						</Col>
@@ -185,12 +185,12 @@
 							</FormItem>
 						</Col> -->
 						<Col span="24">
-							<FormItem label="开始日期" style="margin-bottom:24px">
-							 	<DatePicker type="date"  @on-change="on_select_StartDate_edit" style="width:100%" placeholder="开始日期" v-model="mod_start_date"></DatePicker>
+							<FormItem label="生效日期" style="margin-bottom:24px">
+							 	<DatePicker type="date" disabled  @on-change="on_select_StartDate_edit" style="width:100%" placeholder="开始日期" v-model="mod_start_date"></DatePicker>
 							</FormItem>
 						</Col>
 						<Col span="24">
-							<FormItem label="结束日期" style="margin-bottom:24px">
+							<FormItem label="失效日期" style="margin-bottom:24px">
 								<DatePicker type="date" @on-change="on_select_EndDate_edit" style="width:100%" placeholder="结束日期" v-model="mod_end_date"></DatePicker>
 							 </FormItem>
 						</Col>
@@ -296,7 +296,7 @@ export default {
 						}
 					},
 					{
-						title:'变更失效日期',
+						title:'失效日期变更',
 						key:'ApplyEndDate',
 						width: 150,
 						render:(h, params) => {
