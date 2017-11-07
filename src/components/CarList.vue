@@ -186,7 +186,7 @@
 						</Col> -->
 						<Col span="24">
 							<FormItem label="生效日期" style="margin-bottom:24px">
-							 	<DatePicker type="date" disabled  @on-change="on_select_StartDate_edit" style="width:100%" placeholder="开始日期" v-model="mod_start_date"></DatePicker>
+							 	<DatePicker type="date"   @on-change="on_select_StartDate_edit" style="width:100%" placeholder="开始日期" v-model="mod_start_date"></DatePicker>
 							</FormItem>
 						</Col>
 						<Col span="24">
@@ -411,7 +411,7 @@ export default {
 			addData:{
 				Ctype:'CarCodeMgrAdd',
 				carcode:'',
-				cartype:'',
+				cartype:'小型车',
 				remark:'',
 				applyparkingtype:'',
 				startdate:'',
